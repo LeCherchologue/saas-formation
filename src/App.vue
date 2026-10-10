@@ -1,30 +1,54 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <div id="app" class="app-root">
+    <app-navbar v-if="!isLearnRoute" />
+    <main class="main-body" :class="{ 'lms-mode': isLearnRoute }">
+      <router-view />
+    </main>
+    <app-footer v-if="!isLearnRoute" />
+  </div>
 </template>
 
+<script lang="ts">
+import { defineComponent, computed } from 'vue'
+import { useRoute } from 'vue-router'
+import AppNavbar from './components/layout/AppNavbar.vue'
+import AppFooter from './components/layout/AppFooter.vue'
+
+export default defineComponent({
+  name: 'App',
+  components: {
+    AppNavbar,
+    AppFooter
+  },
+  setup() {
+    const route = useRoute()
+
+    const isLearnRoute = computed(() => {
+      return route.path.startsWith('/learn/')
+    })
+
+    return {
+      isLearnRoute
+    }
+  }
+})
+</script>
+
 <style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+@import './assets/styles/main.scss';
+
+.app-root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
 }
 
-nav {
-  padding: 30px;
+.main-body {
+  flex: 1;
 
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+  &.lms-mode {
+    display: flex;
+    flex-direction: column;
   }
 }
 </style>

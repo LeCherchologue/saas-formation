@@ -1,5 +1,13 @@
-import { createRouter, createWebHashHistory, RouteRecordRaw } from 'vue-router'
+import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router'
 import HomeView from '../views/HomeView.vue'
+import AboutView from '../views/AboutView.vue'
+import CoursesView from '../views/CoursesView.vue'
+import CourseDetailView from '../views/CourseDetailView.vue'
+import LearnPlayerView from '../views/LearnPlayerView.vue'
+import CertificateView from '../views/CertificateView.vue'
+import DashboardView from '../views/DashboardView.vue'
+import PlansView from '../views/PlansView.vue'
+import BusinessView from '../views/BusinessView.vue'
 
 const routes: Array<RouteRecordRaw> = [
   {
@@ -10,16 +18,60 @@ const routes: Array<RouteRecordRaw> = [
   {
     path: '/about',
     name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
+    component: AboutView
+  },
+  {
+    path: '/courses',
+    name: 'courses',
+    component: CoursesView
+  },
+  {
+    path: '/course/:slug',
+    name: 'course-detail',
+    component: CourseDetailView
+  },
+  {
+    path: '/learn/:courseId',
+    name: 'learn-player',
+    component: LearnPlayerView
+  },
+  {
+    path: '/verify',
+    name: 'verify',
+    component: CertificateView
+  },
+  {
+    path: '/verify/:id',
+    name: 'verify-detail',
+    component: CertificateView
+  },
+  {
+    path: '/dashboard',
+    name: 'dashboard',
+    component: DashboardView
+  },
+  {
+    path: '/plans',
+    name: 'plans',
+    component: PlansView
+  },
+  {
+    path: '/businesses',
+    name: 'businesses',
+    component: BusinessView
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    redirect: '/'
   }
 ]
 
 const router = createRouter({
-  history: createWebHashHistory(),
-  routes
+  history: createWebHistory(),
+  routes,
+  scrollBehavior() {
+    return { top: 0 }
+  }
 })
 
 export default router
