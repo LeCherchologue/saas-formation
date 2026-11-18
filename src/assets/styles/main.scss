@@ -1,56 +1,82 @@
+/* =====================================================================
+   Debugger Formation — Design system "Clay"
+   Style : claymorphism (relief doux, bords épais, coins très arrondis,
+   doubles ombres, pastels). Palette "E-learning" : sarcelle + orange.
+   Tous les textes respectent un contraste ≥ 4.5:1.
+   ===================================================================== */
 :root {
-  /* === Debugger Brand Colors (from </> logo — mint on paper) === */
-  --color-primary: #34d399;
-  --color-primary-hover: #10b981;
-  --color-primary-dark: #059669;
-  --color-primary-light: rgba(52, 211, 153, 0.10);
-  --color-primary-glow: rgba(52, 211, 153, 0.20);
+  /* --- Marque (sarcelle) --- */
+  --color-primary: #14b8a6;        /* fonds, boutons, jauges (texte foncé dessus : 5.8:1) */
+  --color-primary-hover: #2dd4bf;
+  --color-primary-dark: #0f766e;
+  --color-primary-ink: #0f766e;    /* texte vert sur fond clair : 5.3:1 */
+  --color-on-primary: #042f2e;
+  --color-primary-light: #ccfbf1;  /* pastel menthe */
+  --color-primary-glow: rgba(20, 184, 166, 0.22);
 
-  /* Light backgrounds */
-  --color-bg: #fafbfa;
+  /* --- Fonds --- */
+  --color-bg: #f0fdfa;
   --color-surface: #ffffff;
   --color-surface-2: #ffffff;
-  --color-surface-3: #f1f3f1;
-  --color-surface-hover: #eef1ee;
+  --color-surface-3: #e6f7f3;
+  --color-surface-hover: #ddf5ef;
 
-  /* Text */
-  --color-text: #14171a;
-  --color-text-secondary: #52585a;
-  --color-text-muted: #7a8280;
-  --color-text-light: #a8afac;
+  /* --- Texte --- */
+  --color-text: #134e4a;
+  --color-text-secondary: #3f5f5c;
+  --color-text-muted: #56716e;
+  --color-text-light: #9db5b1;
 
-  /* Borders */
-  --color-border: #e5e8e5;
-  --color-border-subtle: #eef0ee;
-  --color-border-medium: rgba(52, 211, 153, 0.35);
+  /* --- Bordures --- */
+  --color-border: #d5eee8;
+  --color-border-subtle: #e6f5f1;
+  --color-border-medium: #99f6e4;
+  --border-w: 2px;
 
-  /* Accent colors (deepened for legibility on a white surface) */
-  --color-accent-cyan: #0e8fa6;
-  --color-accent-violet: #7c5cfc;
-  --color-accent-orange: #ea7c1f;
-  --color-accent-yellow: #ca8a04;
+  /* --- Accents (lisibles sur blanc) --- */
+  --color-accent-cyan: #0b7285;
+  --color-accent-violet: #6d4ae8;
+  --color-accent-orange: #c2410c;
+  --color-accent-yellow: #a16207;
+  --color-achievement: #fb923c;    /* orange "réussite" pour les fonds */
 
-  /* Semantic */
-  --color-success: #10b981;
-  --color-warning: #d97706;
+  /* --- Pastels clay --- */
+  --pastel-mint: #ccfbf1;
+  --pastel-peach: #ffe4d6;
+  --pastel-sky: #dbeafe;
+  --pastel-lilac: #ede9fe;
+  --pastel-butter: #fef3c7;
+
+  /* --- Sémantique --- */
+  --color-success: #0d9488;
+  --color-warning: #b45309;
   --color-error: #dc2626;
-  --color-info: #0e8fa6;
+  --color-info: #0b7285;
 
-  --radius-sm: 6px;
-  --radius-md: 12px;
-  --radius-lg: 18px;
-  --radius-xl: 28px;
+  /* --- Formes --- */
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --radius-xl: 32px;
   --radius-full: 9999px;
 
-  --shadow-sm: 0 1px 2px rgba(20, 23, 26, 0.05);
-  --shadow-md: 0 4px 16px rgba(20, 23, 26, 0.07);
-  --shadow-lg: 0 12px 32px rgba(20, 23, 26, 0.09);
-  --shadow-xl: 0 24px 48px rgba(20, 23, 26, 0.12);
-  --shadow-green: 0 8px 24px rgba(52, 211, 153, 0.16);
-  --shadow-green-lg: 0 16px 40px rgba(52, 211, 153, 0.20);
+  /* --- Ombres clay : extérieure douce + reflet intérieur clair + creux intérieur --- */
+  --clay-inner: inset 3px 3px 6px rgba(255, 255, 255, 0.85), inset -4px -4px 8px rgba(19, 78, 74, 0.06);
+  --shadow-sm: 0 2px 0 rgba(19, 78, 74, 0.06), 4px 4px 10px rgba(19, 78, 74, 0.08), var(--clay-inner);
+  --shadow-md: 8px 10px 24px rgba(19, 78, 74, 0.10), -4px -4px 14px rgba(255, 255, 255, 0.9), var(--clay-inner);
+  --shadow-lg: 14px 18px 40px rgba(19, 78, 74, 0.13), -6px -6px 18px rgba(255, 255, 255, 0.9), var(--clay-inner);
+  --shadow-xl: 20px 28px 60px rgba(19, 78, 74, 0.16), -8px -8px 24px rgba(255, 255, 255, 0.9), var(--clay-inner);
+  --shadow-green: 0 10px 24px rgba(20, 184, 166, 0.28), inset 0 -4px 0 rgba(4, 47, 46, 0.14), inset 0 3px 0 rgba(255, 255, 255, 0.4);
+  --shadow-green-lg: 0 16px 36px rgba(20, 184, 166, 0.34), inset 0 -4px 0 rgba(4, 47, 46, 0.14), inset 0 3px 0 rgba(255, 255, 255, 0.4);
+  --shadow-pressed: inset 4px 4px 10px rgba(19, 78, 74, 0.14), inset -3px -3px 8px rgba(255, 255, 255, 0.7);
 
-  --font-body: 'Figtree', 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
-  --font-heading: 'Outfit', 'Figtree', sans-serif;
+  /* --- Mouvement --- */
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* --- Typographie --- */
+  --font-body: 'DM Sans', system-ui, -apple-system, sans-serif;
+  --font-heading: 'Nunito', 'DM Sans', sans-serif;
   --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
 }
 
@@ -67,7 +93,15 @@ html {
 
 body {
   font-family: var(--font-body);
+  font-weight: 450;
   background-color: var(--color-bg);
+  /* halos pastel fixes derrière le contenu */
+  background-image:
+    radial-gradient(circle at 8% 12%, rgba(204, 251, 241, 0.9) 0, transparent 32%),
+    radial-gradient(circle at 92% 8%, rgba(237, 233, 254, 0.8) 0, transparent 30%),
+    radial-gradient(circle at 85% 70%, rgba(255, 228, 214, 0.6) 0, transparent 28%),
+    radial-gradient(circle at 10% 85%, rgba(219, 234, 254, 0.7) 0, transparent 30%);
+  background-attachment: fixed;
   color: var(--color-text);
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -88,8 +122,25 @@ button {
 
 input, select, textarea {
   font-family: inherit;
-  color-scheme: dark;
+  color-scheme: light;
 }
+
+/* Champ de saisie en creux (effet pâte pressée) — à appliquer avec la classe .clay-input */
+.clay-input {
+  border-radius: var(--radius-md);
+  border: var(--border-w) solid var(--color-border);
+  background-color: var(--color-surface-3);
+  box-shadow: var(--shadow-pressed);
+  color: var(--color-text);
+  transition: border-color 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease;
+}
+.clay-input:focus {
+  outline: none;
+  background-color: var(--color-surface);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4px var(--color-primary-glow);
+}
+::placeholder { color: var(--color-text-muted); opacity: 1; }
 
 /* Container */
 .container {
@@ -101,12 +152,22 @@ input, select, textarea {
   padding-right: 1.5rem;
 }
 
-/* Headings */
+/* Headings : Nunito aux terminaisons arrondies */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
-  font-weight: 700;
+  font-weight: 800;
   line-height: 1.2;
+  letter-spacing: -0.01em;
   color: var(--color-text);
+}
+h1 { font-weight: 900; letter-spacing: -0.025em; }
+
+/* === CARTE CLAY (utilitaire réutilisable) === */
+.clay {
+  background-color: var(--color-surface);
+  border: 3px solid rgba(255, 255, 255, 0.9);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
 }
 
 /* === BUTTONS === */
@@ -115,125 +176,99 @@ h1, h2, h3, h4, h5, h6 {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.75rem 1.75rem;
-  font-weight: 600;
-  font-size: 0.95rem;
-  border-radius: var(--radius-full);
-  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  min-height: 44px;
+  padding: 0.75rem 1.6rem;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 0.98rem;
+  letter-spacing: 0.005em;
+  border-radius: var(--radius-md);
+  transition: transform 0.2s var(--ease-bounce), box-shadow 0.2s ease-out, background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
   text-decoration: none;
   white-space: nowrap;
-  border: 1px solid transparent;
+  border: 3px solid transparent;
   cursor: pointer;
 }
+.btn:hover { transform: translateY(-3px); }
+.btn:active { transform: translateY(1px) scale(0.98); }
 
-.btn-primary {
-  background-color: var(--color-primary);
-  color: #0a1f16;
-  font-weight: 700;
-  box-shadow: 0 4px 14px rgba(52, 211, 153, 0.28);
-}
-.btn-primary:hover {
-  background-color: var(--color-primary-hover);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(52, 211, 153, 0.38);
-}
-
+.btn-primary,
 .btn-accent {
-  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
-  color: #0a1f16;
-  font-weight: 700;
-  box-shadow: 0 4px 14px rgba(52, 211, 153, 0.32);
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  border-color: rgba(255, 255, 255, 0.55);
+  box-shadow: var(--shadow-green);
 }
+.btn-primary:hover,
 .btn-accent:hover {
-  background: linear-gradient(135deg, #5fdead 0%, #34d399 100%);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 22px rgba(52, 211, 153, 0.42);
+  background-color: var(--color-primary-hover);
+  box-shadow: var(--shadow-green-lg);
 }
+.btn-accent {
+  background-color: var(--color-achievement);
+  color: #431407;
+  box-shadow: 0 10px 24px rgba(251, 146, 60, 0.32), inset 0 -4px 0 rgba(67, 20, 7, 0.14), inset 0 3px 0 rgba(255, 255, 255, 0.4);
+}
+.btn-accent:hover { background-color: #fdba74; box-shadow: 0 16px 34px rgba(251, 146, 60, 0.38), inset 0 -4px 0 rgba(67, 20, 7, 0.14), inset 0 3px 0 rgba(255, 255, 255, 0.4); }
 
-.btn-secondary {
-  background-color: var(--color-surface-2);
-  color: var(--color-text);
-  border: 1px solid var(--color-border);
-}
-.btn-secondary:hover {
-  background-color: var(--color-surface-3);
-  border-color: var(--color-border-medium);
-  color: var(--color-primary);
-}
-
+.btn-secondary,
 .btn-ghost-white {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: var(--color-surface);
   color: var(--color-text);
-  backdrop-filter: blur(8px);
-  border: 1px solid var(--color-border);
+  border-color: rgba(255, 255, 255, 0.9);
+  box-shadow: var(--shadow-sm);
 }
+.btn-secondary:hover,
 .btn-ghost-white:hover {
-  background-color: var(--color-primary-light);
-  border-color: var(--color-primary);
-  color: var(--color-primary);
+  color: var(--color-primary-ink);
+  box-shadow: var(--shadow-md);
 }
 
 .btn-dark {
   background-color: var(--color-text);
-  color: var(--color-bg);
-  border: 1px solid var(--color-text);
+  color: #ffffff;
+  border-color: rgba(255, 255, 255, 0.25);
+  box-shadow: 0 10px 24px rgba(19, 78, 74, 0.28), inset 0 -4px 0 rgba(0, 0, 0, 0.2), inset 0 3px 0 rgba(255, 255, 255, 0.12);
 }
 .btn-dark:hover {
-  background-color: var(--color-primary);
-  color: #0a1f16;
-  border-color: var(--color-primary);
+  background-color: #115e59;
 }
 
 .btn-outline-green {
-  background-color: transparent;
-  color: var(--color-primary);
-  border: 1px solid var(--color-primary);
-}
-.btn-outline-green:hover {
   background-color: var(--color-primary-light);
+  color: var(--color-primary-ink);
+  border-color: var(--color-border-medium);
+  box-shadow: var(--shadow-sm);
 }
+.btn-outline-green:hover { box-shadow: var(--shadow-md); }
 
-.btn-sm { padding: 0.4rem 0.9rem; font-size: 0.83rem; }
-.btn-lg { padding: 0.95rem 2.2rem; font-size: 1.05rem; }
+.btn-sm { min-height: 36px; padding: 0.4rem 1rem; font-size: 0.85rem; border-radius: var(--radius-sm); border-width: 2px; }
+.btn-lg { min-height: 54px; padding: 0.95rem 2.2rem; font-size: 1.06rem; border-radius: 18px; }
 .btn-block { width: 100%; justify-content: center; }
-.btn:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; box-shadow: none; }
 
-/* === BADGES === */
+/* === BADGES (pastilles en pâte) === */
 .badge {
   display: inline-flex;
   align-items: center;
   gap: 0.35rem;
-  padding: 0.25rem 0.75rem;
-  font-size: 0.72rem;
-  font-weight: 700;
+  padding: 0.3rem 0.8rem;
+  font-family: var(--font-heading);
+  font-size: 0.74rem;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   border-radius: var(--radius-full);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 2px 3px 8px rgba(19, 78, 74, 0.08), inset 0 2px 0 rgba(255, 255, 255, 0.6);
 }
-
-.badge-yellow {
-  background-color: rgba(202, 138, 4, 0.10);
-  color: var(--color-accent-yellow);
-  border: 1px solid rgba(202, 138, 4, 0.25);
-}
-.badge-green {
-  background-color: var(--color-primary-light);
-  color: var(--color-primary-dark);
-  border: 1px solid rgba(52, 211, 153, 0.25);
-}
-.badge-blue {
-  background-color: rgba(14, 143, 166, 0.10);
-  color: var(--color-accent-cyan);
-  border: 1px solid rgba(14, 143, 166, 0.25);
-}
-.badge-pink {
-  background-color: rgba(124, 92, 252, 0.10);
-  color: var(--color-accent-violet);
-  border: 1px solid rgba(124, 92, 252, 0.25);
-}
+.badge-yellow { background-color: var(--pastel-butter); color: #854d0e; }
+.badge-green  { background-color: var(--pastel-mint);   color: var(--color-primary-ink); }
+.badge-blue   { background-color: var(--pastel-sky);    color: #1e40af; }
+.badge-pink   { background-color: var(--pastel-lilac);  color: #5b21b6; }
 
 /* === SECTIONS === */
-.section { padding: 5rem 0; }
+.section { padding: 5.5rem 0; }
 
 .section-header {
   text-align: center;
@@ -241,32 +276,42 @@ h1, h2, h3, h4, h5, h6 {
   margin: 0 auto 3.5rem auto;
 }
 .section-header .subtitle {
-  color: var(--color-primary);
-  font-weight: 700;
-  font-size: 0.8rem;
+  color: var(--color-primary-ink);
+  background-color: var(--pastel-mint);
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 2px 3px 8px rgba(19, 78, 74, 0.08), inset 0 2px 0 rgba(255, 255, 255, 0.6);
+  padding: 0.35rem 0.95rem;
+  border-radius: var(--radius-full);
+  font-family: var(--font-heading);
+  font-weight: 800;
+  font-size: 0.78rem;
   text-transform: uppercase;
-  letter-spacing: 0.14em;
-  margin-bottom: 0.85rem;
+  letter-spacing: 0.1em;
+  margin-bottom: 1rem;
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
 }
 .section-header h2 {
-  font-size: 2.5rem;
+  font-size: clamp(1.9rem, 3.6vw, 2.7rem);
+  font-weight: 900;
   color: var(--color-text);
   margin-bottom: 1rem;
+  text-wrap: balance;
 }
 .section-header p {
   color: var(--color-text-secondary);
   font-size: 1.1rem;
+  text-wrap: pretty;
 }
 
 .section-divider {
-  width: 60px;
-  height: 3px;
-  background: linear-gradient(90deg, transparent, var(--color-primary), transparent);
+  width: 56px;
+  height: 8px;
+  background: var(--color-primary);
   margin: 1rem auto;
   border-radius: var(--radius-full);
+  box-shadow: inset 0 -2px 0 rgba(4, 47, 46, 0.15), inset 0 2px 0 rgba(255, 255, 255, 0.5);
 }
 
 /* === ANIMATIONS === */
@@ -279,30 +324,36 @@ h1, h2, h3, h4, h5, h6 {
   to { opacity: 1; transform: translateY(0); }
 }
 @keyframes pulseGlow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.35); }
-  50% { box-shadow: 0 0 0 12px rgba(52, 211, 153, 0); }
+  0%, 100% { box-shadow: 0 0 0 0 rgba(20, 184, 166, 0.35); }
+  50% { box-shadow: 0 0 0 12px rgba(20, 184, 166, 0); }
 }
 @keyframes float {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }
 }
+@keyframes popIn {
+  0% { opacity: 0; transform: scale(0.92) translateY(10px); }
+  100% { opacity: 1; transform: scale(1) translateY(0); }
+}
 
-.animate-fade-in { animation: fadeIn 0.4s ease-out forwards; }
-.animate-slide-up { animation: slideUp 0.5s ease-out forwards; }
+.animate-fade-in { animation: popIn 0.45s var(--ease-bounce) both; }
+.animate-slide-up { animation: slideUp 0.5s var(--ease-out) both; }
 
 /* === CODE ELEMENTS === */
 .code-tag {
   font-family: var(--font-mono);
-  background-color: var(--color-surface-2);
-  color: var(--color-primary);
-  padding: 0.15rem 0.45rem;
+  background-color: var(--pastel-mint);
+  color: var(--color-primary-ink);
+  padding: 0.1rem 0.5rem;
   border-radius: var(--radius-sm);
   font-size: 0.85em;
-  border: 1px solid var(--color-border);
+  font-weight: 600;
+  border: 2px solid rgba(255, 255, 255, 0.9);
 }
 
 /* === PRINT (certificate) === */
 @media print {
+  body { background: #ffffff !important; }
   body * { visibility: hidden; }
   .printable-certificate, .printable-certificate * { visibility: visible; }
   .printable-certificate {
@@ -316,3 +367,32 @@ h1, h2, h3, h4, h5, h6 {
   }
   .no-print { display: none !important; }
 }
+
+/* === ACCESSIBILITÉ === */
+:focus-visible {
+  outline: 3px solid var(--color-primary-ink);
+  outline-offset: 3px;
+}
+a, button, [role="button"], label, select, summary { cursor: pointer; }
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* === ICÔNES 3D (3dicons.co, CC0) === */
+/* Les rendus ont un fond blanc : "multiply" le fond dans la couleur du conteneur */
+.icon-3d {
+  display: inline-block;
+  flex-shrink: 0;
+  object-fit: contain;
+  mix-blend-mode: multiply;
+  user-select: none;
+  -webkit-user-drag: none;
+  transition: transform 0.35s var(--ease-bounce);
+}
+*:hover > .icon-3d { transform: translateY(-3px) rotate(-6deg) scale(1.06); }

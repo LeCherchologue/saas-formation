@@ -1,6 +1,6 @@
 <template>
   <div v-if="course" class="course-detail-page">
-    <!-- Top Hero Banner -->
+    <!-- Bandeau -->
     <section class="detail-hero">
       <div class="container hero-inner">
         <div class="hero-left-info">
@@ -16,56 +16,62 @@
           <p class="detail-tagline">{{ course.tagline }}</p>
 
           <div class="meta-stats-row">
-            <div class="rating-badge">
+            <div v-if="course.reviewsCount" class="rating-badge">
               <app-icon name="star" :size="14" filled class="star" />
               <strong>{{ course.rating }}</strong>
-              <span>({{ course.reviewsCount }} avis vérifiés)</span>
+              <span>({{ course.reviewsCount }} avis)</span>
             </div>
             <div class="meta-item">
               <app-icon name="users" :size="14" />
-              <strong>{{ course.enrolledCount.toLocaleString() }}</strong> apprenants inscrits
+              <strong>{{ course.enrolledCount.toLocaleString('fr-FR') }}</strong> apprenants inscrits
             </div>
             <div class="meta-item">
               <app-icon name="bar-chart" :size="14" />
               Niveau : <strong>{{ course.level }}</strong>
             </div>
+            <div class="meta-item">
+              <app-icon name="clock" :size="14" />
+              <strong>{{ course.hours }} h</strong> de formation
+            </div>
           </div>
 
           <div class="instructor-preview">
-            <img :src="course.instructor.avatar" :alt="course.instructor.name" class="inst-avatar" />
+            <img :src="course.instructor.avatar" alt="" class="inst-avatar" />
             <div class="inst-text">
               <span class="inst-name">Formateur : {{ course.instructor.name }}</span>
-              <span class="inst-role">{{ course.instructor.title }} • {{ course.instructor.company }}</span>
+              <span class="inst-role">{{ instructorRole }}</span>
             </div>
           </div>
         </div>
 
-        <!-- Floating Sticky Enrollment Card -->
+        <!-- Carte d'inscription -->
         <div class="hero-right-card">
           <div class="pricing-floating-card">
-            <img :src="course.thumbnail" :alt="course.title" class="card-thumb" />
+            <img :src="course.thumbnail" alt="" class="card-thumb" />
 
             <div class="card-p-body">
               <div class="price-header">
-                <span class="free-label">Accès libre & Flexible</span>
-                <span class="price-main">0 € <small>en formule de base</small></span>
+                <span class="free-label">Formation gratuite</span>
+                <span class="price-main">0 FCFA <small>accès complet</small></span>
               </div>
 
               <div class="features-checklist">
-                <div class="f-item"><app-icon name="check" :size="16" class="ico-yes" /> Accès immédiat aux modules</div>
-                <div class="f-item"><app-icon name="check" :size="16" class="ico-yes" /> Rythme personnalisé ({{ chosenHours }}h)</div>
-                <div class="f-item"><app-icon name="check" :size="16" class="ico-yes" /> Certificat officiel avec QR code</div>
-                <div class="f-item"><app-icon name="check" :size="16" class="ico-yes" /> Support pédagogique & quiz interactifs</div>
+                <div class="f-item"><app-icon name="check" :size="16" class="ico-yes" /> {{ course.modulesCount }} modules · {{ course.stepsCount }} étapes guidées</div>
+                <div class="f-item"><app-icon name="check" :size="16" class="ico-yes" /> Quiz corrigés pour valider chaque module</div>
+                <div v-if="course.assignmentsCount" class="f-item"><app-icon name="check" :size="16" class="ico-yes" /> {{ course.assignmentsCount }} dépôts de code, dont le projet final</div>
+                <div class="f-item"><app-icon name="check" :size="16" class="ico-yes" /> Certificat officiel : {{ certifPrice }} en fin de parcours</div>
               </div>
 
-              <button class="btn btn-accent btn-lg btn-block" @click="enrollAndStart">
+              <p v-if="error" class="enroll-error" role="alert">{{ error }}</p>
+
+              <button class="btn btn-accent btn-lg btn-block" :disabled="enrolling" @click="enrollAndStart">
                 <app-icon name="rocket" :size="18" />
-                Commencer la formation maintenant
+                {{ ctaLabel }}
               </button>
 
               <div class="guarantee-note">
                 <app-icon name="lock" :size="14" />
-                Certificat officiel d'heures vérifiable auprès des recruteurs
+                Paiement du certificat par Airtel Money, Moov Money ou Visa
               </div>
             </div>
           </div>
@@ -73,24 +79,14 @@
       </div>
     </section>
 
-    <!-- Main Content Section -->
+    <!-- Contenu -->
     <div class="container content-grid-layout">
       <div class="main-column">
-        <!-- Interactive Duration Customizer -->
-        <section class="content-block">
-          <duration-slider
-            v-model="chosenHours"
-            :min-hours="course.minHours"
-            :max-hours="course.maxHours"
-          />
-        </section>
-
-        <!-- Course Description & Outcomes -->
         <section class="content-block">
           <h2 class="block-title">À propos de cette formation</h2>
           <p class="full-desc">{{ course.description }}</p>
 
-          <div class="skills-acquired-box">
+          <div v-if="course.skills.length" class="skills-acquired-box">
             <h3>Compétences que vous allez valider</h3>
             <div class="skills-chips">
               <span v-for="skill in course.skills" :key="skill" class="skill-bubble">
@@ -101,79 +97,57 @@
           </div>
         </section>
 
-        <!-- Syllabus & Modules -->
         <section class="content-block syllabus-block">
           <div class="syllabus-header">
             <div>
-              <h2 class="block-title">Programme & Modules de la formation</h2>
-              <p class="sub">
-                Affichage adapté à votre volume horaire sélectionné (<strong>{{ chosenHours }} heures</strong>).
-              </p>
+              <h2 class="block-title">Programme de la formation</h2>
+              <p class="sub">Un parcours progressif : chaque étape se débloque quand la précédente est validée.</p>
             </div>
             <div class="modules-count-tag">
-              {{ course.modules.length }} modules • {{ totalLessonsCount }} leçons
+              {{ course.modulesCount }} modules • {{ course.stepsCount }} étapes
             </div>
           </div>
 
           <div class="modules-accordion">
-            <div
-              v-for="(mod, index) in course.modules"
-              :key="mod.id"
-              class="module-card"
-            >
-              <div class="mod-header" @click="toggleModule(mod.id)">
+            <div v-for="(mod, index) in course.modules || []" :key="mod.id" class="module-card">
+              <button class="mod-header" :aria-expanded="openModuleId === mod.id" @click="toggleModule(mod.id)">
                 <div class="mod-title-left">
-                  <span class="mod-badge">Module {{ index + 1 }}</span>
+                  <span class="mod-badge">Partie {{ index + 1 }}</span>
                   <h4>{{ mod.title }}</h4>
                 </div>
                 <div class="mod-meta-right">
                   <span class="mod-duration">
                     <app-icon name="clock" :size="13" />
-                    ~{{ mod.durationHours }}h de pratique
+                    {{ formatMinutes(mod.minutes) }}
                   </span>
-                  <app-icon
-                    name="chevron-down"
-                    :size="14"
-                    class="chevron"
-                    :class="{ 'chevron-open': openModuleId === mod.id }"
-                  />
+                  <app-icon name="chevron-down" :size="14" class="chevron" :class="{ 'chevron-open': openModuleId === mod.id }" />
                 </div>
-              </div>
+              </button>
 
               <div v-show="openModuleId === mod.id" class="mod-lessons-list animate-fade-in">
-                <div v-for="lesson in mod.lessons" :key="lesson.id" class="lesson-row">
+                <div v-for="step in mod.steps" :key="step.id" class="lesson-row">
                   <div class="lesson-info">
                     <span class="lesson-type-icon">
-                      <app-icon
-                        :name="lesson.type === 'video' ? 'video' : lesson.type === 'exercise' ? 'code' : 'file-text'"
-                        :size="15"
-                      />
+                      <app-icon :name="stepIcon(step.type)" :size="15" />
                     </span>
-                    <span class="lesson-name">{{ lesson.title }}</span>
+                    <span class="lesson-name">{{ step.title }}</span>
                   </div>
-                  <span class="lesson-time">{{ lesson.duration }}</span>
-                </div>
-
-                <div class="quiz-info-row">
-                  <span class="quiz-ico"><app-icon name="target" :size="16" /></span>
-                  <span class="quiz-title">{{ mod.quiz.title }}</span>
-                  <span class="quiz-pass-badge">Obligatoire pour certificat</span>
+                  <span class="lesson-time">{{ typeLabel(step.type) }} · {{ formatMinutes(step.minutes) }}</span>
                 </div>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- Instructor Bio -->
         <section class="content-block instructor-full-block">
-          <h2 class="block-title">Votre Formatrice / Formateur</h2>
+          <h2 class="block-title">Votre formatrice / formateur</h2>
           <div class="instructor-card-full">
-            <img :src="course.instructor.avatar" :alt="course.instructor.name" class="inst-full-avatar" />
+            <img :src="course.instructor.avatar" alt="" class="inst-full-avatar" />
             <div class="inst-full-info">
               <h3>{{ course.instructor.name }}</h3>
-              <p class="inst-title">{{ course.instructor.title }} • {{ course.instructor.company }}</p>
+              <p class="inst-title">{{ instructorRole }}</p>
               <p class="inst-bio">
-                Professionnel(le) chevronné(e) du secteur, passionné(e) par la transmission de compétences concrètes et immédiatement applicables dans les environnements de travail les plus exigeants.
+                Professionnel(le) du secteur, passionné(e) par la transmission de compétences concrètes et immédiatement applicables.
               </p>
             </div>
           </div>
@@ -182,9 +156,11 @@
     </div>
   </div>
 
+  <div v-else-if="loading" class="container section text-center"><p>Chargement de la formation…</p></div>
+
   <div v-else class="course-not-found container section text-center">
     <h2>Formation introuvable</h2>
-    <p>Le cours demandé n'existe pas ou a été déplacé.</p>
+    <p>{{ error || "Le cours demandé n'existe pas ou a été déplacé." }}</p>
     <router-link to="/courses" class="btn btn-primary">Retour au catalogue</router-link>
   </div>
 </template>
@@ -193,70 +169,83 @@
 import { defineComponent, ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useStore } from 'vuex'
-import { getCourseBySlug, Course } from '../data/courses'
-import DurationSlider from '../components/course/DurationSlider.vue'
 import AppIcon from '../components/layout/AppIcon.vue'
+import { catalogueApi } from '../api'
+import { Course, StepType } from '../api/types'
+import { formatMinutes, formatPrice } from '../utils/format'
 
 export default defineComponent({
   name: 'CourseDetailView',
-  components: {
-    DurationSlider,
-    AppIcon
-  },
-  setup() {
+  components: { AppIcon },
+  setup () {
     const route = useRoute()
     const router = useRouter()
     const store = useStore()
 
-    const course = ref<Course | undefined>(undefined)
-    const chosenHours = ref(25)
-    const openModuleId = ref<string>('m1')
+    const slug = String(route.params.slug)
+    const course = ref<Course | null>(null)
+    const loading = ref(true)
+    const error = ref('')
+    const enrolling = ref(false)
+    const openModuleId = ref<number | null>(null)
 
-    onMounted(() => {
-      const slug = String(route.params.slug)
-      const found = getCourseBySlug(slug)
-      if (found) {
-        course.value = found
-        chosenHours.value = found.defaultHours
-        if (found.modules.length > 0) {
-          openModuleId.value = found.modules[0].id
-        }
+    const enrolled = computed(() => !!store.getters.myCourseBySlug(slug))
+    const ctaLabel = computed(() => {
+      if (enrolling.value) return 'Inscription…'
+      if (!store.getters.isAuthenticated) return 'Créer un compte et commencer'
+      return enrolled.value ? 'Reprendre la formation' : 'Commencer gratuitement'
+    })
+    const certifPrice = computed(() => course.value ? formatPrice(course.value.certificationPrice, course.value.currency) : '')
+    const instructorRole = computed(() => course.value ? [course.value.instructor.title, course.value.instructor.company].filter(Boolean).join(' • ') : '')
+
+    onMounted(async () => {
+      try {
+        course.value = await catalogueApi.detail(slug)
+        if (course.value.modules && course.value.modules.length) openModuleId.value = course.value.modules[0].id
+      } catch (e: any) {
+        error.value = e.status === 404 ? '' : e.message
+      } finally {
+        loading.value = false
       }
     })
 
-    const totalLessonsCount = computed(() => {
-      if (!course.value) return 0
-      return course.value.modules.reduce((acc, m) => acc + m.lessons.length, 0)
-    })
-
-    const toggleModule = (id: string) => {
-      openModuleId.value = openModuleId.value === id ? '' : id
+    const toggleModule = (id: number) => {
+      openModuleId.value = openModuleId.value === id ? null : id
     }
 
-    const enrollAndStart = () => {
-      if (!course.value) return
-      store.dispatch('enroll', {
-        courseId: course.value.id,
-        chosenHours: chosenHours.value
-      })
-      router.push(`/learn/${course.value.id}`)
+    const enrollAndStart = async () => {
+      if (!store.getters.isAuthenticated) {
+        router.push({ name: 'login', query: { mode: 'register', redirect: route.fullPath } })
+        return
+      }
+      enrolling.value = true
+      error.value = ''
+      try {
+        if (!enrolled.value) await store.dispatch('enroll', slug)
+        router.push(`/learn/${slug}`)
+      } catch (e: any) {
+        error.value = e.message
+      } finally {
+        enrolling.value = false
+      }
     }
+
+    const typeLabel = (t: StepType) => ({ lecon: 'Leçon', quiz: 'Quiz', devoir: 'Code à rendre' }[t])
+    const stepIcon = (t: StepType) => ({ lecon: 'file-text', quiz: 'target', devoir: 'upload' }[t])
 
     return {
-      course,
-      chosenHours,
-      openModuleId,
-      totalLessonsCount,
-      toggleModule,
-      enrollAndStart
+      course, loading, error, enrolling, openModuleId, ctaLabel, certifPrice, instructorRole,
+      toggleModule, enrollAndStart, typeLabel, stepIcon, formatMinutes
     }
   }
 })
 </script>
 
 <style scoped lang="scss">
+.enroll-error { background: #fee2e2; color: #991b1b; border-radius: var(--radius-sm); padding: 0.6rem 0.9rem; font-weight: 600; margin-bottom: 0.75rem; font-size: 0.9rem; }
+button.mod-header { width: 100%; text-align: left; font: inherit; color: inherit; border: none; }
 .detail-hero {
-  background: linear-gradient(135deg, var(--color-primary-dark) 0%, #0f2f1c 100%);
+  background: linear-gradient(135deg, var(--color-primary-dark) 0%, #042f2e 100%);
   color: #ffffff;
   padding: 3.5rem 0 4rem 0;
   position: relative;
@@ -366,7 +355,7 @@ export default defineComponent({
   border-radius: var(--radius-xl);
   overflow: hidden;
   box-shadow: var(--shadow-xl);
-  border: 1px solid var(--color-border);
+  border: 3px solid rgba(255, 255, 255, 0.95);
   position: sticky;
   top: 100px;
 
@@ -389,7 +378,7 @@ export default defineComponent({
   .free-label {
     font-size: 0.8rem;
     font-weight: 700;
-    color: var(--color-primary);
+    color: var(--color-primary-ink);
     text-transform: uppercase;
   }
 
@@ -421,7 +410,7 @@ export default defineComponent({
     font-weight: 500;
 
     .ico-yes {
-      color: var(--color-primary);
+      color: var(--color-primary-ink);
       flex-shrink: 0;
     }
   }
@@ -466,7 +455,7 @@ export default defineComponent({
 
 .skills-acquired-box {
   background-color: var(--color-surface-2);
-  border: 1px solid var(--color-border);
+  border: 3px solid rgba(255, 255, 255, 0.95);
   border-radius: var(--radius-lg);
   padding: 1.75rem;
 
@@ -486,13 +475,14 @@ export default defineComponent({
       align-items: center;
       gap: 0.4rem;
       background-color: var(--color-primary-light);
-      color: var(--color-primary);
+      color: var(--color-primary-ink);
       font-weight: 600;
       font-size: 0.85rem;
       padding: 0.35rem 0.85rem;
       border-radius: var(--radius-full);
     }
   }
+  box-shadow: var(--shadow-md);
 }
 
 /* Syllabus Accordion */
@@ -511,12 +501,12 @@ export default defineComponent({
 
   .modules-count-tag {
     background-color: var(--color-surface-2);
-    border: 1px solid var(--color-border);
+    border: var(--border-w) solid var(--color-border);
     padding: 0.35rem 0.85rem;
     border-radius: var(--radius-sm);
     font-size: 0.85rem;
     font-weight: 600;
-    color: var(--color-primary);
+    color: var(--color-primary-ink);
   }
 }
 
@@ -528,7 +518,7 @@ export default defineComponent({
 
 .module-card {
   background-color: var(--color-surface-2);
-  border: 1px solid var(--color-border);
+  border: 3px solid rgba(255, 255, 255, 0.95);
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-sm);
@@ -554,7 +544,7 @@ export default defineComponent({
 
     .mod-badge {
       background-color: var(--color-primary-light);
-      color: var(--color-primary);
+      color: var(--color-primary-ink);
       font-size: 0.75rem;
       font-weight: 700;
       padding: 0.25rem 0.6rem;
@@ -586,7 +576,7 @@ export default defineComponent({
 
       &.chevron-open {
         transform: rotate(180deg);
-        color: var(--color-primary);
+        color: var(--color-primary-ink);
       }
     }
   }
@@ -612,7 +602,7 @@ export default defineComponent({
 
     .lesson-type-icon {
       display: inline-flex;
-      color: var(--color-primary);
+      color: var(--color-primary-ink);
     }
 
     .lesson-name {
@@ -636,7 +626,7 @@ export default defineComponent({
 
   .quiz-ico {
     display: inline-flex;
-    color: var(--color-primary);
+    color: var(--color-primary-ink);
   }
 
   .quiz-title {
@@ -648,7 +638,7 @@ export default defineComponent({
   .quiz-pass-badge {
     margin-left: auto;
     font-size: 0.72rem;
-    color: var(--color-primary);
+    color: var(--color-primary-ink);
     font-weight: 700;
     background-color: var(--color-primary-light);
     padding: 0.2rem 0.6rem;
@@ -659,7 +649,7 @@ export default defineComponent({
 /* Instructor Full Card */
 .instructor-card-full {
   background-color: var(--color-surface-2);
-  border: 1px solid var(--color-border);
+  border: 3px solid rgba(255, 255, 255, 0.95);
   border-radius: var(--radius-lg);
   padding: 2rem;
   display: flex;
@@ -683,7 +673,7 @@ export default defineComponent({
 
     .inst-title {
       font-size: 0.85rem;
-      color: var(--color-primary);
+      color: var(--color-primary-ink);
       font-weight: 600;
       margin-bottom: 0.75rem;
     }
@@ -694,6 +684,63 @@ export default defineComponent({
       line-height: 1.6;
     }
   }
+  box-shadow: var(--shadow-md);
+}
+
+/* =====================================================================
+   THÈME CLAY — surcharges de la page
+   ===================================================================== */
+.detail-hero {
+  --color-primary: #5eead4;
+  --color-primary-ink: #5eead4;
+  --color-primary-light: rgba(94, 234, 212, 0.16);
+  margin: 0 0.75rem;
+  border-radius: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.6);
+  border-bottom: 4px solid rgba(255, 255, 255, 0.6);
+  box-shadow: var(--shadow-xl), inset 0 4px 0 rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+}
+
+.detail-hero .rating-badge {
+  border: 2px solid rgba(255, 255, 255, 0.15);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.08);
+}
+.pricing-floating-card {
+  /* carte claire dans le bandeau sombre : on rétablit les couleurs du thème clair */
+  --color-primary: #14b8a6;
+  --color-primary-ink: #0f766e;
+  --color-primary-light: #ccfbf1;
+  border: 4px solid rgba(255, 255, 255, 0.95);
+  box-shadow: var(--shadow-xl);
+  .card-thumb { margin: 8px 8px 0; border-radius: 26px; overflow: hidden; }
+}
+.skills-acquired-box .skills-chips span {
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  box-shadow: var(--shadow-sm);
+  font-weight: 700;
+}
+.modules-count-tag {
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  box-shadow: var(--shadow-sm);
+  font-weight: 700;
+}
+.module-card { overflow: hidden; }
+.mod-header {
+  background-color: transparent;
+  .mod-title-left .mod-badge {
+    white-space: nowrap;
+    font-family: var(--font-heading);
+    font-weight: 900;
+    box-shadow: var(--clay-inner);
+  }
+}
+.mod-lessons-list {
+  margin: 0 10px 10px;
+  border-top: none;
+  border-radius: 18px;
+  background-color: var(--color-surface-3);
+  box-shadow: var(--shadow-pressed);
 }
 
 @media (max-width: 1024px) {

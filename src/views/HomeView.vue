@@ -17,9 +17,9 @@
           </h1>
 
           <p class="hero-desc">
-            Des formations professionnelles modulables créées par des experts.
-            Choisissez votre volume de <span class="code-inline">&lt;4h /&gt;</span> à <span class="code-inline">&lt;120h /&gt;</span>,
-            validez vos acquis et obtenez un certificat officiel reconnu.
+            Des formations professionnelles <strong>100 % gratuites</strong>, créées par des experts.
+            Progressez étape par étape — leçons, quiz et exercices de code — puis obtenez
+            votre certificat officiel pour <span class="code-inline">5 100 FCFA</span>.
           </p>
 
           <div class="hero-ctas">
@@ -27,9 +27,9 @@
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>
               Explorer les formations
             </router-link>
-            <router-link to="/plans" class="btn btn-secondary btn-lg">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-              Voir les formules
+            <router-link :to="$store.getters.isAuthenticated ? '/espace' : '/connexion?mode=register'" class="btn btn-secondary btn-lg">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              {{ $store.getters.isAuthenticated ? 'Mon espace' : 'Créer mon compte gratuit' }}
             </router-link>
           </div>
 
@@ -50,44 +50,43 @@
         <!-- Hero right: floating card with live hours customizer -->
         <div class="hero-right">
           <div class="hero-card">
+          <span class="hero-float f-1" aria-hidden="true"><icon-3d name="trophy" :size="72" /></span>
+          <span class="hero-float f-2" aria-hidden="true"><icon-3d name="rocket" :size="64" /></span>
             <div class="hero-card-top-badge">
               <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-              Accès Immédiat · 0€ de base
+              Formation gratuite · Nouveau
             </div>
 
-            <div class="card-course-pick" @click="$router.push('/course/intelligence-artificielle-generative-prompting')">
+            <div class="card-course-pick" @click="$router.push('/course/developpement-application-web')">
               <div class="pick-icon-wrap">
-                <!-- AI circuit icon -->
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="1.5">
-                  <circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/><path d="M5.64 5.64l2.12 2.12m8.49 8.49l2.12 2.12M5.64 18.36l2.12-2.12m8.49-8.49l2.12-2.12"/>
-                </svg>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#0f766e" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
               </div>
               <div class="pick-text">
-                <span class="pick-cat">IA Générative &amp; Prompt Engineering</span>
-                <span class="pick-meta">4.94 ★ · 25h recommandées</span>
+                <span class="pick-cat">Développement d'Application Web</span>
+                <span class="pick-meta">HTML · CSS · JavaScript · 24 h</span>
               </div>
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0f766e" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
             </div>
 
             <div class="card-hour-widget">
               <div class="widget-header">
-                <span>Volume horaire</span>
-                <span class="hours-tag">{{ heroHours }}h</span>
+                <span>Votre parcours</span>
+                <span class="hours-tag">4 étapes</span>
               </div>
-              <input type="range" min="4" max="120" step="4" v-model.number="heroHours" class="debug-range" />
-              <div class="widget-result">
-                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
-                <span>Certificat : <strong>{{ getLevel(heroHours) }}</strong></span>
-              </div>
+              <ol class="mini-steps">
+                <li v-for="(p, i) in heroSteps" :key="p" :class="{ first: i === 0 }">
+                  <span class="ms-dot">{{ i + 1 }}</span>{{ p }}
+                </li>
+              </ol>
             </div>
 
-            <router-link to="/course/intelligence-artificielle-generative-prompting" class="btn btn-primary btn-block">
-              Démarrer en {{ heroHours }}h →
+            <router-link to="/course/developpement-application-web" class="btn btn-primary btn-block">
+              Commencer gratuitement →
             </router-link>
 
             <div class="card-security-note">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-              Certificat officiel QR code inclus
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#14b8a6" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Certificat officiel 5 100 FCFA · Airtel Money, Moov Money, Visa
             </div>
           </div>
         </div>
@@ -98,8 +97,8 @@
         <div class="term-bar"><span class="dot r"></span><span class="dot y"></span><span class="dot g"></span></div>
         <code class="term-code">
           <span class="c-gray">// Debugger Formation — Lancez votre progression</span><br />
-          <span class="c-green">const</span> <span class="c-blue">formation</span> = <span class="c-green">new</span> <span class="c-text">Formation</span>(<span class="c-yellow">'{{ activeCourseName }}'</span>);<br />
-          <span class="c-blue">formation</span>.<span class="c-text">setHours</span>(<span class="c-yellow">{{ heroHours }}</span>).<span class="c-text">getCertified</span>();
+          <span class="c-green">const</span> <span class="c-blue">formation</span> = <span class="c-green">new</span> <span class="c-text">Formation</span>(<span class="c-yellow">'Développement Web'</span>);<br />
+          <span class="c-blue">formation</span>.<span class="c-text">suivreEtapes</span>().<span class="c-text">deposerProjet</span>().<span class="c-text">getCertified</span>();
         </code>
       </div>
     </section>
@@ -109,7 +108,7 @@
       <div class="container stats-inner">
         <div class="stat-item" v-for="stat in stats" :key="stat.label">
           <span class="stat-icon">
-            <svg :viewBox="stat.icon.viewBox" width="20" height="20" fill="none" stroke="#34d399" stroke-width="1.5" v-html="stat.icon.path"></svg>
+            <icon-3d :name="stat.icon3d" :size="32" />
           </span>
           <div class="stat-text">
             <span class="stat-num">{{ stat.value }}</span>
@@ -136,7 +135,7 @@
           <div v-for="card in whyCards" :key="card.title" class="why-card" :style="{ '--card-accent': card.accent }">
             <div class="why-card-header">
               <div class="why-icon" :style="{ color: card.accent }">
-                <svg :viewBox="card.icon.viewBox" width="28" height="28" fill="none" :stroke="card.accent" stroke-width="1.5" v-html="card.icon.path"></svg>
+                <icon-3d :name="card.icon3d" :size="44" />
               </div>
               <span class="why-num">0{{ card.num }}</span>
             </div>
@@ -147,27 +146,6 @@
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
             </router-link>
           </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ======== INTERACTIVE DURATION SIMULATOR ======== -->
-    <section class="section simulator-section">
-      <div class="container sim-wrapper">
-        <div class="section-header">
-          <span class="subtitle">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-            Flexibilité Signature Debugger
-          </span>
-          <h2>Simulateur de charge &amp; certification</h2>
-          <div class="section-divider"></div>
-          <p>Glissez le curseur pour visualiser comment votre programme et votre certificat s'ajustent en temps réel.</p>
-        </div>
-        <duration-slider v-model="simHours" :min-hours="4" :max-hours="120" />
-        <div class="sim-cta">
-          <router-link :to="'/courses?hours=' + simHours" class="btn btn-accent btn-lg">
-            Trouver ma formation en {{ simHours }}h →
-          </router-link>
         </div>
       </div>
     </section>
@@ -194,7 +172,7 @@
             :class="{ active: activeCat === cat.id }"
             @click="activeCat = cat.id"
           >
-            <svg :viewBox="cat.icon.viewBox" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" v-html="cat.icon.path"></svg>
+            <icon-3d :name="cat.icon3d" :size="22" />
             {{ cat.label }}
           </button>
         </div>
@@ -228,7 +206,7 @@
           <div v-for="(step, i) in steps" :key="i" class="step-card">
             <div class="step-num">{{ String(i + 1).padStart(2, '0') }}</div>
             <div class="step-icon-box">
-              <svg :viewBox="step.icon.viewBox" width="24" height="24" fill="none" stroke="#34d399" stroke-width="1.5" v-html="step.icon.path"></svg>
+              <icon-3d :name="step.icon3d" :size="40" />
             </div>
             <h4>{{ step.title }}</h4>
             <p>{{ step.text }}</p>
@@ -261,9 +239,9 @@
             <div class="mini-terminal">
               <div class="mt-bar"><span></span><span></span><span></span></div>
               <pre class="mt-code"><span style="color:#5a7085">// Team analytics</span>
-<span style="color:#34d399">const</span> <span style="color:#22d3ee">team</span> = <span style="color:#a78bfa">await</span> debugger.<span style="color:#e8edf2">getTeam</span>();
-<span style="color:#e8edf2">team</span>.<span style="color:#34d399">forEach</span>(user => {
-  <span style="color:#e8edf2">console</span>.<span style="color:#facc15">log</span>(<span style="color:#34d399">`</span><span style="color:#facc15">${user.name}</span><span style="color:#34d399"> ✓ certified`</span>);
+<span style="color:#14b8a6">const</span> <span style="color:#22d3ee">team</span> = <span style="color:#a78bfa">await</span> debugger.<span style="color:#e8edf2">getTeam</span>();
+<span style="color:#e8edf2">team</span>.<span style="color:#14b8a6">forEach</span>(user => {
+  <span style="color:#e8edf2">console</span>.<span style="color:#facc15">log</span>(<span style="color:#14b8a6">`</span><span style="color:#facc15">${user.name}</span><span style="color:#14b8a6"> ✓ certified`</span>);
 });</pre>
             </div>
           </div>
@@ -276,17 +254,18 @@
 
 <script lang="ts">
 import { defineComponent, ref, computed } from 'vue'
-import { COURSES, CATEGORIES, Course } from '../data/courses'
+import { useStore } from 'vuex'
+import { Course } from '../data/courses'
 import CourseCard from '../components/course/CourseCard.vue'
-import DurationSlider from '../components/course/DurationSlider.vue'
+import Icon3d from '../components/ui/Icon3d.vue'
 
 export default defineComponent({
   name: 'HomeView',
-  components: { CourseCard, DurationSlider },
+  components: { CourseCard, Icon3d },
   setup() {
-    const heroHours = ref(25)
-    const simHours = ref(30)
+    const store = useStore()
     const activeCat = ref('all')
+    const heroSteps = ['HTML5 avancé', 'Les outils CSS', 'JavaScript', 'Projet final']
 
     const avatarUrls = [
       'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=80&q=80',
@@ -295,115 +274,92 @@ export default defineComponent({
       'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=80&q=80'
     ]
 
-    const activeCourseName = computed(() => {
-      if (heroHours.value <= 10) return 'IA Express Fondamentaux'
-      if (heroHours.value <= 40) return 'IA Générative — Parcours Pro'
-      return 'IA Générative Expert Complet'
-    })
-
-    const getLevel = (h: number) => {
-      if (h <= 10) return 'Fondamentaux Express'
-      if (h <= 40) return 'Pratique Professionnelle'
-      if (h <= 80) return 'Spécialisation Avancée'
-      return 'Excellence & Maîtrise'
-    }
-
     const stats = [
       {
         value: '25 000+',
-        label: 'Formations créées',
-        icon: { viewBox: '0 0 24 24', path: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>' }
+        label: 'Formations créées', icon3d: 'notebook'
       },
       {
         value: '+100 pays',
-        label: 'Certificats reconnus',
-        icon: { viewBox: '0 0 24 24', path: '<circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>' }
+        label: 'Certificats reconnus', icon3d: 'medal'
       },
       {
         value: '250 000+',
-        label: 'Professionnels certifiés',
-        icon: { viewBox: '0 0 24 24', path: '<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>' }
+        label: 'Professionnels certifiés', icon3d: 'rocket'
       },
       {
         value: '4.9 / 5.0',
-        label: 'Satisfaction moyenne',
-        icon: { viewBox: '0 0 24 24', path: '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>' }
+        label: 'Satisfaction moyenne', icon3d: 'star'
       }
     ]
 
     const whyCards = [
       {
         num: 1,
-        title: 'Contenu expert sélectionné par des praticiens',
+        title: 'Contenu expert sélectionné par des praticiens', icon3d: 'bulb',
         text: 'Des formations conçues par des leaders en poste (Ex-DeepMind, Qonto, GAFAM). Des cas pratiques réels, un contenu constamment actualisé.',
-        accent: '#34d399',
+        accent: '#14b8a6',
         link: '/courses',
-        cta: 'Explorer le catalogue',
-        icon: { viewBox: '0 0 24 24', path: '<path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/>' }
+        cta: 'Explorer le catalogue'
       },
       {
         num: 2,
-        title: 'Rythme 100% personnalisable de 4h à 120h',
-        text: 'Votre emploi du temps, vos règles. Réglez le curseur d\'heures et le programme adapte son contenu — et le certificat suit.',
+        title: 'Un parcours progressif, étape par étape', icon3d: 'clock',
+        text: 'Leçons, quiz corrigés et exercices de code : chaque étape se débloque quand la précédente est validée.',
         accent: '#0e8fa6',
         link: '/courses',
-        cta: 'Voir les formations',
-        icon: { viewBox: '0 0 24 24', path: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>' }
+        cta: 'Voir les formations'
       },
       {
         num: 3,
-        title: 'Certificats officiels vérifiables avec QR code',
-        text: 'Chaque diplôme porte un ID cryptographique unique vérifié instantanément par les recruteurs. Conforme aux standards européens.',
+        title: 'Formations gratuites, certificat à 5 100 FCFA', icon3d: 'shield',
+        text: 'Chaque diplôme porte un numéro unique vérifié par Debugger. Paiement par Airtel Money, Moov Money ou Visa.',
         accent: '#7c5cfc',
-        link: '/verify',
-        cta: 'Consulter un certificat',
-        icon: { viewBox: '0 0 24 24', path: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/>' }
+        link: '/plans',
+        cta: 'Voir les tarifs'
       }
     ]
 
     const svgCats = [
-      { id: 'all', label: 'Toutes', icon: { viewBox: '0 0 24 24', path: '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>' } },
-      { id: 'tech', label: 'Tech & IA', icon: { viewBox: '0 0 24 24', path: '<circle cx="12" cy="12" r="3"/><path d="M12 2v3m0 14v3M2 12h3m14 0h3"/>' } },
-      { id: 'business', label: 'Management', icon: { viewBox: '0 0 24 24', path: '<rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/>' } },
-      { id: 'design', label: 'Design', icon: { viewBox: '0 0 24 24', path: '<circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10c.926 0 1.648-.746 1.648-1.688 0-.437-.18-.835-.437-1.125-.29-.289-.438-.652-.438-1.125a1.64 1.64 0 0 1 1.668-1.668h1.996c3.051 0 5.555-2.503 5.555-5.554C21.965 6.012 17.461 2 12 2z"/>' } },
-      { id: 'data', label: 'Cybersécurité', icon: { viewBox: '0 0 24 24', path: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>' } },
-      { id: 'marketing', label: 'Growth', icon: { viewBox: '0 0 24 24', path: '<polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/>' } }
+      { id: 'all', icon3d: 'magic-trick', label: 'Toutes' },
+      { id: 'tech', icon3d: 'computer', label: 'Tech & Dev' },
+      { id: 'business', icon3d: 'bag', label: 'Management' },
+      { id: 'design', icon3d: 'color-palette', label: 'Design' },
+      { id: 'data', icon3d: 'shield', label: 'Cybersécurité' },
+      { id: 'marketing', icon3d: 'megaphone', label: 'Growth' }
     ]
 
     const steps = [
       {
-        title: 'Choisissez votre formation',
-        text: 'Explorez notre catalogue par domaine et filtrez par niveau ou durée.',
-        icon: { viewBox: '0 0 24 24', path: '<circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>' }
+        title: 'Créez votre compte', icon3d: 'target',
+        text: 'Inscription gratuite en une minute, puis accès libre à toutes les formations.'
       },
       {
-        title: 'Définissez votre volume',
-        text: 'Réglez le curseur d\'heures (4h à 120h). Le programme et le certificat s\'adaptent.',
-        icon: { viewBox: '0 0 24 24', path: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>' }
+        title: 'Suivez le parcours', icon3d: 'calendar',
+        text: 'Leçons et quiz dans l\'ordre : chaque étape validée débloque la suivante.'
       },
       {
-        title: 'Apprenez dans le lecteur LMS',
-        text: 'Vidéos, guides pratiques, quiz interactifs — à votre rythme sur tous vos appareils.',
-        icon: { viewBox: '0 0 24 24', path: '<rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>' }
+        title: 'Déposez votre code', icon3d: 'computer',
+        text: 'Envoyez le code source de chaque exercice, puis votre projet final.'
       },
       {
-        title: 'Obtenez votre certificat',
-        text: 'Validez le quiz final et téléchargez votre diplôme officiel avec QR code vérifiable.',
-        icon: { viewBox: '0 0 24 24', path: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/>' }
+        title: 'Obtenez votre certificat', icon3d: 'trophy',
+        text: 'Réglez 5 100 FCFA par Airtel Money, Moov Money ou Visa et accédez à votre diplôme.'
       }
     ]
 
-    const totalCount = computed(() => COURSES.length)
+    const catalogue = computed<Course[]>(() => store.state.catalogue)
+    const totalCount = computed(() => catalogue.value.length)
     const categories = svgCats
 
     const visibleCourses = computed(() => {
-      if (activeCat.value === 'all') return COURSES
-      return COURSES.filter(c => c.category === activeCat.value)
+      const list = activeCat.value === 'all' ? catalogue.value : catalogue.value.filter(c => c.category === activeCat.value)
+      return list.slice(0, 6)
     })
 
     return {
-      heroHours, simHours, activeCat,
-      avatarUrls, activeCourseName, getLevel,
+      activeCat, heroSteps,
+      avatarUrls,
       stats, whyCards, categories, steps,
       totalCount, visibleCourses
     }
@@ -412,6 +368,19 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
+.mini-steps {
+  list-style: none;
+  display: grid;
+  gap: 0.45rem;
+  margin-top: 0.25rem;
+  li { display: flex; align-items: center; gap: 0.6rem; font-weight: 700; font-size: 0.9rem; color: var(--color-text-secondary); }
+  li.first { color: var(--color-text); }
+}
+.ms-dot {
+  width: 24px; height: 24px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.75rem; font-weight: 900; background: var(--color-surface); box-shadow: var(--shadow-sm);
+  .first & { background: var(--color-primary); color: var(--color-on-primary); }
+}
 /* ===== HERO ===== */
 .hero-section {
   background-color: var(--color-bg);
@@ -434,7 +403,7 @@ export default defineComponent({
   align-items: center;
   gap: 0.5rem;
   background-color: var(--color-primary-light);
-  border: 1px solid var(--color-border-medium);
+  border: var(--border-w) solid var(--color-border-medium);
   color: var(--color-primary-dark);
   font-size: 0.78rem;
   font-weight: 700;
@@ -463,7 +432,7 @@ export default defineComponent({
   letter-spacing: -0.02em;
 
   .hero-title-green {
-    color: var(--color-primary);
+    color: var(--color-primary-ink);
   }
 }
 
@@ -477,11 +446,11 @@ export default defineComponent({
   .code-inline {
     font-family: var(--font-mono);
     background-color: var(--color-surface-2);
-    color: var(--color-primary);
+    color: var(--color-primary-ink);
     padding: 0.1rem 0.4rem;
     border-radius: 4px;
     font-size: 0.95em;
-    border: 1px solid var(--color-border);
+    border: var(--border-w) solid var(--color-border);
   }
 }
 
@@ -535,7 +504,7 @@ export default defineComponent({
 /* Hero floating card */
 .hero-card {
   background-color: var(--color-surface);
-  border: 1px solid var(--color-border-medium);
+  border: var(--border-w) solid var(--color-border-medium);
   border-radius: var(--radius-xl);
   padding: 2rem;
   box-shadow: var(--shadow-green-lg), var(--shadow-xl);
@@ -545,9 +514,9 @@ export default defineComponent({
     display: inline-flex;
     align-items: center;
     gap: 0.4rem;
-    background-color: rgba(52, 211, 153, 0.12);
-    border: 1px solid rgba(52, 211, 153, 0.25);
-    color: var(--color-primary);
+    background-color: rgba(20, 184, 166, 0.12);
+    border: 1px solid rgba(20, 184, 166, 0.25);
+    color: var(--color-primary-ink);
     font-size: 0.72rem;
     font-weight: 700;
     text-transform: uppercase;
@@ -560,7 +529,7 @@ export default defineComponent({
 
 .card-course-pick {
   background-color: var(--color-surface-2);
-  border: 1px solid var(--color-border);
+  border: var(--border-w) solid var(--color-border);
   border-radius: var(--radius-md);
   padding: 0.85rem;
   display: flex;
@@ -578,12 +547,12 @@ export default defineComponent({
   .pick-icon-wrap {
     width: 40px;
     height: 40px;
-    background-color: rgba(52, 211, 153, 0.1);
+    background-color: rgba(20, 184, 166, 0.1);
     border-radius: var(--radius-md);
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgba(52, 211, 153, 0.2);
+    border: 1px solid rgba(20, 184, 166, 0.2);
     flex-shrink: 0;
   }
 
@@ -601,7 +570,7 @@ export default defineComponent({
   border-radius: var(--radius-md);
   padding: 1rem;
   margin-bottom: 1.25rem;
-  border: 1px solid var(--color-border);
+  border: var(--border-w) solid var(--color-border);
 
   .widget-header {
     display: flex;
@@ -613,7 +582,7 @@ export default defineComponent({
 
     .hours-tag {
       background-color: var(--color-primary-light);
-      color: var(--color-primary);
+      color: var(--color-primary-ink);
       font-weight: 800;
       font-size: 0.85rem;
       padding: 0.2rem 0.6rem;
@@ -627,7 +596,7 @@ export default defineComponent({
     width: 100%;
     height: 6px;
     border-radius: var(--radius-full);
-    background: linear-gradient(90deg, var(--color-primary) 0%, rgba(52,211,153,0.25) 100%);
+    background: linear-gradient(90deg, var(--color-primary) 0%, rgba(20, 184, 166, 0.25) 100%);
     outline: none;
     cursor: pointer;
     margin-bottom: 0.75rem;
@@ -639,7 +608,7 @@ export default defineComponent({
       border-radius: 50%;
       background: var(--color-text);
       border: 3px solid var(--color-primary);
-      box-shadow: 0 0 10px rgba(52,211,153,0.35);
+      box-shadow: 0 0 10px rgba(20, 184, 166, 0.35);
       cursor: pointer;
     }
   }
@@ -652,7 +621,7 @@ export default defineComponent({
     color: var(--color-text-secondary);
 
     svg { stroke: var(--color-primary); }
-    strong { color: var(--color-primary); }
+    strong { color: var(--color-primary-ink); }
   }
 }
 
@@ -673,8 +642,8 @@ export default defineComponent({
   z-index: 2;
   max-width: 680px;
   margin: 3.5rem auto 0 auto;
-  background-color: #050709;
-  border: 1px solid var(--color-border);
+  background-color: #0b3b38;
+  border: var(--border-w) solid var(--color-border);
   border-radius: var(--radius-lg);
   overflow: hidden;
   box-shadow: var(--shadow-md);
@@ -683,7 +652,7 @@ export default defineComponent({
     display: flex;
     gap: 0.4rem;
     padding: 0.6rem 0.85rem;
-    background-color: #14171a;
+    background-color: #134e4a;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 
     .dot {
@@ -692,7 +661,7 @@ export default defineComponent({
       border-radius: 50%;
       &.r { background: #f87171; }
       &.y { background: #facc15; }
-      &.g { background: #34d399; }
+      &.g { background: #14b8a6; }
     }
   }
 
@@ -702,8 +671,8 @@ export default defineComponent({
     font-family: var(--font-mono);
     font-size: 0.82rem;
     line-height: 1.8;
-    .c-gray { color: #7a8280; }
-    .c-green { color: #34d399; }
+    .c-gray { color: #56716e; }
+    .c-green { color: #14b8a6; }
     .c-blue { color: #22d3ee; }
     .c-yellow { color: #facc15; }
     .c-text { color: #e8edf2; }
@@ -742,13 +711,13 @@ export default defineComponent({
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
-    border: 1px solid rgba(52,211,153,0.2);
+    border: 1px solid rgba(20, 184, 166, 0.2);
   }
 
   .stat-text {
     display: flex;
     flex-direction: column;
-    .stat-num { font-weight: 800; font-size: 1.3rem; color: var(--color-primary); }
+    .stat-num { font-weight: 800; font-size: 1.3rem; color: var(--color-primary-ink); }
     .stat-label { font-size: 0.78rem; color: var(--color-text-muted); }
   }
 }
@@ -764,7 +733,7 @@ export default defineComponent({
 
 .why-card {
   background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: var(--border-w) solid var(--color-border);
   border-radius: var(--radius-xl);
   padding: 2.5rem 2rem;
   transition: all 0.3s ease;
@@ -778,15 +747,15 @@ export default defineComponent({
     left: 0;
     right: 0;
     height: 2px;
-    background: linear-gradient(90deg, transparent, var(--card-accent, #34d399), transparent);
+    background: linear-gradient(90deg, transparent, var(--card-accent, #14b8a6), transparent);
     opacity: 0;
     transition: opacity 0.3s ease;
   }
 
   &:hover {
-    border-color: var(--card-accent, #34d399);
+    border-color: var(--card-accent, #14b8a6);
     transform: translateY(-5px);
-    box-shadow: var(--shadow-lg), 0 0 0 1px rgba(52,211,153,0.12);
+    box-shadow: var(--shadow-lg), 0 0 0 1px rgba(20, 184, 166, 0.12);
 
     &::before { opacity: 1; }
   }
@@ -806,7 +775,7 @@ export default defineComponent({
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid var(--color-border);
+    border: var(--border-w) solid var(--color-border);
   }
 
   .why-num {
@@ -836,7 +805,7 @@ export default defineComponent({
     gap: 0.4rem;
     font-size: 0.88rem;
     font-weight: 700;
-    color: var(--color-primary);
+    color: var(--color-primary-ink);
     transition: gap 0.2s ease;
 
     svg { stroke: currentColor; }
@@ -870,7 +839,7 @@ export default defineComponent({
   padding: 0.5rem 1rem;
   border-radius: var(--radius-full);
   background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
+  border: var(--border-w) solid var(--color-border);
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--color-text-secondary);
@@ -882,14 +851,14 @@ export default defineComponent({
 
   &:hover {
     border-color: var(--color-border-medium);
-    color: var(--color-primary);
+    color: var(--color-primary-ink);
     background-color: var(--color-surface-2);
   }
 
   &.active {
     background-color: var(--color-primary-light);
     border-color: var(--color-primary);
-    color: var(--color-primary);
+    color: var(--color-primary-ink);
   }
 }
 
@@ -914,7 +883,7 @@ export default defineComponent({
 
 .step-card {
   background-color: var(--color-surface-2);
-  border: 1px solid var(--color-border);
+  border: var(--border-w) solid var(--color-border);
   border-radius: var(--radius-lg);
   padding: 2rem 1.5rem;
   position: relative;
@@ -938,7 +907,7 @@ export default defineComponent({
     width: 48px;
     height: 48px;
     background-color: var(--color-primary-light);
-    border: 1px solid rgba(52,211,153,0.2);
+    border: 1px solid rgba(20, 184, 166, 0.2);
     border-radius: var(--radius-md);
     display: flex;
     align-items: center;
@@ -974,7 +943,7 @@ export default defineComponent({
 
 .b2b-card {
   background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-surface-2) 100%);
-  border: 1px solid var(--color-border-medium);
+  border: var(--border-w) solid var(--color-border-medium);
   border-radius: var(--radius-xl);
   padding: 4rem;
   display: grid;
@@ -992,7 +961,7 @@ export default defineComponent({
     right: -80px;
     width: 300px;
     height: 300px;
-    background: radial-gradient(circle, rgba(52,211,153,0.08) 0%, transparent 70%);
+    background: radial-gradient(circle, rgba(20, 184, 166, 0.08) 0%, transparent 70%);
   }
 
   .b2b-content {
@@ -1017,8 +986,8 @@ export default defineComponent({
 }
 
 .mini-terminal {
-  background-color: #050709;
-  border: 1px solid var(--color-border);
+  background-color: #0b3b38;
+  border: var(--border-w) solid var(--color-border);
   border-radius: var(--radius-lg);
   overflow: hidden;
   font-family: var(--font-mono);
@@ -1027,7 +996,7 @@ export default defineComponent({
     display: flex;
     gap: 0.35rem;
     padding: 0.5rem 0.75rem;
-    background-color: #14171a;
+    background-color: #134e4a;
     border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 
     span {
@@ -1036,7 +1005,7 @@ export default defineComponent({
       border-radius: 50%;
       &:nth-child(1) { background: #f87171; }
       &:nth-child(2) { background: #facc15; }
-      &:nth-child(3) { background: #34d399; }
+      &:nth-child(3) { background: #14b8a6; }
     }
   }
 
@@ -1045,9 +1014,179 @@ export default defineComponent({
     padding: 1.25rem;
     font-size: 0.78rem;
     line-height: 1.8;
-    color: #7a8280;
+    color: #56716e;
     white-space: pre;
   }
+}
+
+/* =====================================================================
+   THÈME CLAY — surcharges de l'accueil
+   ===================================================================== */
+.hero-section,
+.why-section,
+.catalogue-section { background-color: transparent; }
+
+.simulator-section,
+.how-section {
+  background-color: transparent;
+  background-image: linear-gradient(180deg, transparent 0, rgba(255, 255, 255, 0.6) 12%, rgba(255, 255, 255, 0.6) 88%, transparent 100%);
+}
+
+.hero-title {
+  font-size: clamp(2.4rem, 4.4vw, 3.5rem);
+  line-height: 1.05;
+  text-wrap: balance;
+}
+
+.hero-pill {
+  border: 2px solid rgba(255, 255, 255, 0.9);
+  box-shadow: 2px 3px 8px rgba(19, 78, 74, 0.08), inset 0 2px 0 rgba(255, 255, 255, 0.6);
+}
+
+/* Carte de droite du hero : bloc clay flottant + icônes 3D décoratives */
+.hero-card {
+  border: 4px solid rgba(255, 255, 255, 0.95);
+  box-shadow: var(--shadow-xl);
+  transform: rotate(1deg);
+  transition: transform 0.4s var(--ease-bounce);
+  &:hover { transform: rotate(0deg) translateY(-4px); }
+}
+.hero-float {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 96px;
+  height: 96px;
+  border-radius: 28px;
+  background-color: var(--pastel-butter);
+  border: 4px solid rgba(255, 255, 255, 0.95);
+  box-shadow: var(--shadow-lg);
+  animation: float 5s ease-in-out infinite;
+  &.f-1 { top: -40px; right: -28px; transform: rotate(8deg); }
+  &.f-2 { bottom: -34px; left: -36px; background-color: var(--pastel-lilac); animation-delay: -2.5s; }
+}
+.card-course-pick,
+.card-hour-widget {
+  background-color: var(--color-surface-3);
+  border: none;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-pressed);
+}
+.card-course-pick:hover { background-color: var(--color-surface-hover); }
+.card-course-pick .pick-icon-wrap {
+  background-color: var(--color-surface);
+  border: none;
+  box-shadow: var(--shadow-sm);
+}
+
+.terminal-deco,
+.mini-terminal {
+  border: 4px solid rgba(255, 255, 255, 0.95);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-lg);
+}
+
+/* Chiffres clés : 4 pastilles clay */
+.stats-strip {
+  background-color: transparent;
+  border: none;
+  padding: 1rem 0 2rem;
+}
+.stats-inner { gap: 1.25rem; }
+.stat-item {
+  background-color: var(--color-surface);
+  border: 3px solid rgba(255, 255, 255, 0.95);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 1rem 1.25rem;
+  &:last-child { border-right: 3px solid rgba(255, 255, 255, 0.95); }
+  .stat-icon {
+    width: 56px;
+    height: 56px;
+    border: none;
+    border-radius: var(--radius-md);
+    box-shadow: var(--clay-inner);
+  }
+  &:nth-child(2) .stat-icon { background-color: var(--pastel-butter); }
+  &:nth-child(3) .stat-icon { background-color: var(--pastel-lilac); }
+  &:nth-child(4) .stat-icon { background-color: var(--pastel-peach); }
+  .stat-num { font-family: var(--font-heading); font-weight: 900; }
+}
+
+/* Cartes "Pourquoi" et étapes */
+.why-card,
+.step-card {
+  background-color: var(--color-surface);
+  border: 3px solid rgba(255, 255, 255, 0.95);
+  box-shadow: var(--shadow-md);
+  transition: transform 0.35s var(--ease-bounce), box-shadow 0.3s ease;
+  &::before { display: none; }
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.95);
+    transform: translateY(-8px);
+    box-shadow: var(--shadow-lg);
+  }
+}
+.why-card .why-icon,
+.step-card .step-icon-box {
+  width: 72px;
+  height: 72px;
+  border: none;
+  border-radius: 22px;
+  background-color: var(--pastel-mint);
+  box-shadow: 4px 6px 12px rgba(19, 78, 74, 0.10), var(--clay-inner);
+}
+.why-card:nth-child(2) .why-icon, .step-card:nth-child(2) .step-icon-box { background-color: var(--pastel-sky); }
+.why-card:nth-child(3) .why-icon, .step-card:nth-child(3) .step-icon-box { background-color: var(--pastel-lilac); }
+.step-card:nth-child(4) .step-icon-box { background-color: var(--pastel-butter); }
+.why-card .why-num {
+  font-family: var(--font-heading);
+  font-weight: 900;
+  font-size: 2.4rem;
+  color: var(--color-surface-3);
+}
+.step-card .step-num {
+  display: inline-block;
+  font-family: var(--font-heading);
+  font-weight: 900;
+  color: var(--color-primary-ink);
+  background-color: var(--pastel-mint);
+  padding: 0.1rem 0.6rem;
+  border-radius: var(--radius-full);
+}
+
+/* Puces de catégories */
+.cat-chip {
+  min-height: 44px;
+  padding: 0.35rem 1.1rem 0.35rem 0.5rem;
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  box-shadow: var(--shadow-sm);
+  font-family: var(--font-heading);
+  font-weight: 800;
+  transition: transform 0.25s var(--ease-bounce), box-shadow 0.2s ease, background-color 0.2s ease;
+  &:hover { transform: translateY(-2px); border-color: rgba(255, 255, 255, 0.95); background-color: var(--color-surface); }
+  &.active {
+    background-color: var(--color-primary);
+    border-color: rgba(255, 255, 255, 0.6);
+    color: var(--color-on-primary);
+    box-shadow: var(--shadow-green);
+  }
+}
+
+/* Bannière B2B */
+.b2b-card {
+  background: linear-gradient(135deg, var(--pastel-lilac) 0%, var(--pastel-sky) 55%, var(--pastel-mint) 100%);
+  border: 4px solid rgba(255, 255, 255, 0.95);
+  box-shadow: var(--shadow-xl);
+  &::before { display: none; }
+}
+
+@media (max-width: 640px) {
+  .hero-float { display: none; }
+  .hero-card { transform: none; }
 }
 
 @media (max-width: 1100px) {

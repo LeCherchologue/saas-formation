@@ -10,7 +10,7 @@
       <div class="toolbar-actions">
         <button class="btn btn-secondary btn-sm" @click="copyLink">
           <app-icon name="link" :size="14" />
-          {{ copied ? 'Lien copié !' : 'Partager le lien' }}
+          {{ copied ? 'Numéro copié !' : 'Copier le numéro' }}
         </button>
         <button class="btn btn-primary btn-sm" @click="printCertificate">
           <app-icon name="printer" :size="14" />
@@ -36,7 +36,7 @@
               <svg width="46" height="34" viewBox="0 0 56 40" fill="none">
                 <path d="M14 8L4 20L14 32" stroke="#0a1038" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
                 <path d="M42 8L52 20L42 32" stroke="#0a1038" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-                <path d="M32 6L24 34" stroke="#34d399" stroke-width="4" stroke-linecap="round"/>
+                <path d="M32 6L24 34" stroke="#14b8a6" stroke-width="4" stroke-linecap="round"/>
               </svg>
               <div class="brand-titles">
                 <span class="cert-org-name">DEBUGGER GLOBAL LEARNING</span>
@@ -106,7 +106,7 @@
           <div class="cert-meta-bar">
             <span>Délivré le : <strong>{{ certificate.issueDate }}</strong></span>
             <span>Identifiant Unique : <strong class="cert-id">{{ certificate.id }}</strong></span>
-            <span>Vérifiable sur : <strong>debugger-formation.io/verify/{{ certificate.id }}</strong></span>
+            <span>Vérification : <strong>service des certifications Debugger</strong></span>
           </div>
         </div>
       </div>
@@ -116,7 +116,7 @@
 
 <script lang="ts">
 import { defineComponent, PropType, ref } from 'vue'
-import { CertificateRecord } from '../../store'
+import { CertificateRecord } from '../../api/types'
 import AppIcon from '../layout/AppIcon.vue'
 
 export default defineComponent({
@@ -132,8 +132,7 @@ export default defineComponent({
     const copied = ref(false)
 
     const copyLink = () => {
-      const url = window.location.href
-      navigator.clipboard.writeText(url)
+      navigator.clipboard.writeText(props.certificate.id)
       copied.value = true
       setTimeout(() => {
         copied.value = false
@@ -172,7 +171,7 @@ export default defineComponent({
   background-color: var(--color-surface-2);
   padding: 1rem 1.5rem;
   border-radius: var(--radius-lg);
-  border: 1px solid var(--color-border);
+  border: var(--border-w) solid var(--color-border);
   box-shadow: var(--shadow-sm);
   flex-wrap: wrap;
   gap: 1rem;
@@ -184,7 +183,7 @@ export default defineComponent({
   gap: 0.5rem;
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--color-primary);
+  color: var(--color-primary-ink);
 
   .status-dot {
     width: 10px;
@@ -212,7 +211,7 @@ export default defineComponent({
 }
 
 .cert-outer-border {
-  border: 4px solid #059669;
+  border: 4px solid #0f766e;
   padding: 12px;
   background: #ffffff;
   position: relative;
@@ -349,7 +348,7 @@ export default defineComponent({
   .recipient-name {
     font-family: 'Playfair Display', serif, Georgia;
     font-size: 2.6rem;
-    color: #059669;
+    color: #0f766e;
     font-weight: 700;
     font-style: italic;
     margin-bottom: 0.5rem;
@@ -358,7 +357,7 @@ export default defineComponent({
   .recipient-underline {
     width: 280px;
     height: 2px;
-    background: linear-gradient(90deg, transparent 0%, #059669 50%, transparent 100%);
+    background: linear-gradient(90deg, transparent 0%, #0f766e 50%, transparent 100%);
     margin: 0 auto;
   }
 }
@@ -428,7 +427,7 @@ export default defineComponent({
     color: #1e293b;
 
     &.director {
-      color: #059669;
+      color: #0f766e;
     }
   }
 
@@ -478,7 +477,7 @@ export default defineComponent({
   color: #64748b;
 
   .cert-id {
-    color: #059669;
+    color: #0f766e;
     font-family: monospace;
     font-size: 0.8rem;
   }

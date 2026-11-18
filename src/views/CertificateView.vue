@@ -1,306 +1,81 @@
 <template>
-  <div class="verify-page">
-    <div class="verify-hero no-print">
-      <div class="container">
-        <span class="badge badge-yellow">Portail de Certification</span>
-        <h1>Vérification Officielle de Certificat</h1>
-        <p>Vérifiez en temps réel l'authenticité d'un diplôme émis par la plateforme Debugger.</p>
+  <div class="cert-page">
+    <div class="container">
+      <router-link to="/espace" class="back-link no-print"><app-icon name="arrow-left" :size="16" /> Mon espace</router-link>
 
-        <!-- Search input for cert ID -->
-        <div class="verify-search-box">
-          <app-icon name="search" :size="16" class="search-ico" />
-          <input
-            type="text"
-            placeholder="Entrez l'identifiant (ex: DBG-2026-7491-FR)"
-            v-model="inputCertId"
-            @keyup.enter="lookupCert"
-          />
-          <button class="btn btn-accent" @click="lookupCert">
-            Vérifier le diplôme
-          </button>
-        </div>
+      <p v-if="loading" class="state">Chargement du certificat…</p>
 
-        <div class="sample-pills">
-          <span>Certificats exemples :</span>
-          <button
-            v-for="c in sampleCertIds"
-            :key="c"
-            class="pill-link"
-            @click="loadSample(c)"
-          >
-            {{ c }}
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <div class="container cert-render-area">
-      <!-- Certificate Found & Valid -->
-      <div v-if="currentCert" class="cert-found-wrapper">
-        <certificate-doc :certificate="currentCert" />
+      <div v-else-if="needsPayment" class="state-card clay">
+        <span class="state-ico"><icon-3d name="medal" :size="60" /></span>
+        <h1>Certificat en attente de paiement</h1>
+        <p>Réglez la certification depuis votre espace pour accéder à ce certificat.</p>
+        <router-link to="/espace" class="btn btn-accent">Payer ma certification</router-link>
       </div>
 
-      <!-- Not Found State -->
-      <div v-else-if="searched && !currentCert" class="cert-not-found-card animate-fade-in no-print">
-        <div class="not-found-icon"><app-icon name="alert-triangle" :size="32" /></div>
-        <h3>Certificat introuvable</h3>
-        <p>L'identifiant « <strong>{{ lastSearchedId }}</strong> » ne correspond à aucun certificat émis sur Debugger.</p>
-        <button class="btn btn-secondary" @click="loadSample('DBG-2026-7491-FR')">
-          Charger le certificat de démonstration
-        </button>
+      <div v-else-if="error" class="state-card clay">
+        <span class="state-ico"><app-icon name="alert-triangle" :size="36" /></span>
+        <h1>Certificat introuvable</h1>
+        <p role="alert">{{ error }}</p>
       </div>
 
-      <!-- Default Prompt if no search yet -->
-      <div v-else-if="!currentCert" class="default-prompt no-print">
-        <div class="prompt-card">
-          <div class="prompt-icon"><app-icon name="shield-check" :size="30" /></div>
-          <h3>Comment fonctionne la vérification Debugger ?</h3>
-          <p>
-            Chaque formation terminée avec succès génère un diplôme scellé avec un identifiant cryptographique unique.
-            Les départements RH, employeurs et universités peuvent s'assurer de la validité des compétences et du volume d'heures réelles effectuées.
-          </p>
-          <button class="btn btn-primary" @click="loadSample('DBG-2026-7491-FR')">
-            Voir un exemple officiel vérifié
-          </button>
-        </div>
+      <div v-else-if="record" class="doc-wrap animate-fade-in">
+        <certificate-doc :certificate="record" />
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed, onMounted, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
-import { useStore } from 'vuex'
+import { defineComponent, ref, onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 import CertificateDoc from '../components/certificate/CertificateDoc.vue'
 import AppIcon from '../components/layout/AppIcon.vue'
-import { CertificateRecord } from '../store'
+import Icon3d from '../components/ui/Icon3d.vue'
+import { learningApi } from '../api'
+import { toCertificateRecord } from '../api/mappers'
+import { CertificateRecord } from '../api/types'
 
 export default defineComponent({
   name: 'CertificateView',
-  components: {
-    CertificateDoc,
-    AppIcon
-  },
-  setup() {
+  components: { CertificateDoc, AppIcon, Icon3d },
+  setup () {
     const route = useRoute()
-    const router = useRouter()
-    const store = useStore()
+    const record = ref<CertificateRecord | null>(null)
+    const loading = ref(true)
+    const error = ref('')
+    const needsPayment = ref(false)
 
-    const inputCertId = ref('')
-    const searched = ref(false)
-    const lastSearchedId = ref('')
-    const currentCert = ref<CertificateRecord | null>(null)
-
-    const sampleCertIds = computed(() => {
-      const list = Object.keys(store.state.certificates || {})
-      return list.length ? list : ['DBG-2026-7491-FR']
-    })
-
-    const checkId = (id: string) => {
-      if (!id) return
-      searched.value = true
-      lastSearchedId.value = id
-      const cert = store.getters.getCertificateById(id)
-      if (cert) {
-        currentCert.value = cert
-      } else {
-        // Fallback demo certificate if user types something like DBG-DEMO
-        currentCert.value = null
-      }
-    }
-
-    onMounted(() => {
-      const routeId = route.params.id || route.query.id
-      if (routeId) {
-        inputCertId.value = String(routeId)
-        checkId(String(routeId))
-      } else {
-        // Load default if available
-        const defaultId = sampleCertIds.value[0]
-        if (defaultId) {
-          inputCertId.value = defaultId
-          checkId(defaultId)
-        }
+    onMounted(async () => {
+      try {
+        record.value = toCertificateRecord(await learningApi.certificate(String(route.params.numero)))
+      } catch (e: any) {
+        if (e.status === 402) needsPayment.value = true
+        else error.value = e.message
+      } finally {
+        loading.value = false
       }
     })
 
-    watch(() => route.params.id, (newId) => {
-      if (newId) {
-        inputCertId.value = String(newId)
-        checkId(String(newId))
-      }
-    })
-
-    const lookupCert = () => {
-      if (!inputCertId.value.trim()) return
-      router.push(`/verify/${inputCertId.value.trim()}`)
-      checkId(inputCertId.value.trim())
-    }
-
-    const loadSample = (id: string) => {
-      inputCertId.value = id
-      lookupCert()
-    }
-
-    return {
-      inputCertId,
-      searched,
-      lastSearchedId,
-      currentCert,
-      sampleCertIds,
-      lookupCert,
-      loadSample
-    }
+    return { record, loading, error, needsPayment }
   }
 })
 </script>
 
 <style scoped lang="scss">
-.verify-page {
-  padding-bottom: 5rem;
+.cert-page { padding: 2rem 0 5rem; }
+.back-link {
+  display: inline-flex; align-items: center; gap: 0.4rem; min-height: 40px; padding: 0 0.9rem; margin-bottom: 1.5rem;
+  border-radius: 12px; font-weight: 800; font-family: var(--font-heading); background: var(--color-surface); box-shadow: var(--shadow-sm);
 }
-
-.verify-hero {
-  background-color: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
-  padding: 3.5rem 0 3rem 0;
-  text-align: center;
-
-  h1 {
-    font-size: 2.6rem;
-    color: var(--color-text);
-    margin: 0.75rem 0 0.5rem 0;
-  }
-
-  p {
-    color: var(--color-text-secondary);
-    font-size: 1.1rem;
-    margin-bottom: 2rem;
-  }
+.state { text-align: center; color: var(--color-text-muted); }
+.state-card {
+  max-width: 560px; margin: 2rem auto; padding: 2.5rem; text-align: center; display: grid; justify-items: center; gap: 0.75rem;
+  h1 { font-size: 1.5rem; }
+  p { color: var(--color-text-secondary); }
 }
-
-.verify-search-box {
-  max-width: 580px;
-  margin: 0 auto 1.5rem auto;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  background-color: var(--color-surface-2);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-full);
-  padding: 0.35rem 0.35rem 0.35rem 1.5rem;
-  box-shadow: var(--shadow-lg);
-
-  .search-ico { color: var(--color-text-muted); flex-shrink: 0; }
-
-  input {
-    flex: 1;
-    border: none;
-    outline: none;
-    background: transparent;
-    font-size: 1rem;
-    color: var(--color-text);
-
-    &::placeholder { color: var(--color-text-muted); }
-  }
+.state-ico {
+  width: 92px; height: 92px; border-radius: 28px; display: flex; align-items: center; justify-content: center;
+  background: var(--pastel-butter); box-shadow: var(--clay-inner), var(--shadow-md);
 }
-
-.sample-pills {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.75rem;
-  font-size: 0.85rem;
-  color: var(--color-text-muted);
-  flex-wrap: wrap;
-
-  .pill-link {
-    background-color: var(--color-surface-2);
-    border: 1px solid var(--color-border);
-    color: var(--color-primary);
-    padding: 0.2rem 0.65rem;
-    border-radius: var(--radius-full);
-    font-family: var(--font-mono);
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: all 0.2s ease;
-
-    &:hover {
-      background-color: var(--color-primary-light);
-      border-color: var(--color-primary);
-    }
-  }
-}
-
-.cert-render-area {
-  margin-top: 2.5rem;
-}
-
-.cert-not-found-card {
-  text-align: center;
-  background-color: var(--color-surface-2);
-  border: 1px solid rgba(248, 113, 113, 0.3);
-  border-radius: var(--radius-xl);
-  padding: 3.5rem 2rem;
-  max-width: 600px;
-  margin: 0 auto;
-
-  .not-found-icon {
-    color: var(--color-error);
-    margin-bottom: 1rem;
-    display: flex;
-    justify-content: center;
-  }
-
-  h3 {
-    font-size: 1.5rem;
-    color: var(--color-error);
-    margin-bottom: 0.5rem;
-  }
-
-  p {
-    color: var(--color-text-secondary);
-    margin-bottom: 1.5rem;
-  }
-}
-
-.default-prompt {
-  max-width: 680px;
-  margin: 2rem auto;
-  text-align: center;
-
-  .prompt-card {
-    background-color: var(--color-surface-2);
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-xl);
-    padding: 3rem 2rem;
-
-    .prompt-icon {
-      width: 64px;
-      height: 64px;
-      margin: 0 auto 1.25rem auto;
-      background-color: var(--color-primary-light);
-      border: 1px solid var(--color-border-medium);
-      border-radius: var(--radius-md);
-      color: var(--color-primary);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    h3 {
-      font-size: 1.4rem;
-      color: var(--color-text);
-      margin-bottom: 0.75rem;
-    }
-
-    p {
-      color: var(--color-text-secondary);
-      font-size: 0.95rem;
-      line-height: 1.6;
-      margin-bottom: 1.5rem;
-    }
-  }
-}
+.doc-wrap { max-width: 960px; margin: 0 auto; }
 </style>

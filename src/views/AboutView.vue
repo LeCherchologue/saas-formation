@@ -20,7 +20,7 @@
     <section class="about-stats">
       <div class="container stats-inner">
         <div class="stat-item" v-for="stat in stats" :key="stat.label">
-          <span class="stat-icon"><app-icon :name="stat.icon" :size="20" /></span>
+          <span class="stat-icon"><icon-3d :name="stat.icon3d" :size="44" /></span>
           <div class="stat-text">
             <span class="stat-num">{{ stat.value }}</span>
             <span class="stat-label">{{ stat.label }}</span>
@@ -45,7 +45,7 @@
         <div class="values-grid">
           <div v-for="value in values" :key="value.title" class="value-card">
             <div class="value-icon" :style="{ color: value.accent }">
-              <app-icon :name="value.icon" :size="26" />
+              <icon-3d :name="value.icon3d" :size="46" />
             </div>
             <h3>{{ value.title }}</h3>
             <p>{{ value.text }}</p>
@@ -129,39 +129,44 @@
 <script lang="ts">
 import { defineComponent } from 'vue'
 import AppIcon from '../components/layout/AppIcon.vue'
+import Icon3d from '../components/ui/Icon3d.vue'
 
 export default defineComponent({
   name: 'AboutView',
-  components: { AppIcon },
+  components: { AppIcon, Icon3d },
   setup() {
     const stats = [
-      { icon: 'users', value: '48 200+', label: 'Apprenants actifs' },
-      { icon: 'award', value: '12 400+', label: 'Certificats délivrés' },
-      { icon: 'book-open', value: '7', label: 'Domaines de compétence' },
-      { icon: 'star', value: '4.9 / 5', label: 'Satisfaction moyenne' }
+      { icon: 'users', icon3d: 'rocket', value: '48 200+', label: 'Apprenants actifs' },
+      { icon: 'award', icon3d: 'medal', value: '12 400+', label: 'Certificats délivrés' },
+      { icon: 'book-open', icon3d: 'notebook', value: '7', label: 'Domaines de compétence' },
+      { icon: 'star', icon3d: 'star', value: '4.9 / 5', label: 'Satisfaction moyenne' }
     ]
 
     const values = [
       {
         icon: 'shield-check',
-        accent: '#34d399',
+        icon3d: 'shield',
+        accent: '#14b8a6',
         title: 'Preuve vérifiable',
         text: 'Chaque certificat porte un identifiant cryptographique et un QR code audités en temps réel — aucune compétence affichée sans preuve.'
       },
       {
         icon: 'zap',
+        icon3d: 'clock',
         accent: '#0e8fa6',
-        title: 'Rythme modulable',
-        text: 'De 4 à 120 heures certifiées par formation : vous choisissez le niveau de profondeur, pas un format figé imposé par défaut.'
+        title: 'Progression guidée',
+        text: 'Un parcours progressif : leçons, quiz et exercices de code se débloquent étape par étape, sans raccourci possible.',
       },
       {
         icon: 'code',
+        icon3d: 'bulb',
         accent: '#7c5cfc',
         title: 'Contenu de praticiens',
         text: 'Nos formateurs exercent encore leur métier. Les cas pratiques viennent du terrain, pas de slides génériques.'
       },
       {
         icon: 'leaf',
+        icon3d: 'leaf',
         accent: '#ea7c1f',
         title: 'Accessibilité réelle',
         text: 'Une formule découverte gratuite et des parcours entreprise adaptables, pour que la montée en compétence ne soit jamais un privilège.'
@@ -260,9 +265,9 @@ export default defineComponent({
     align-items: center;
     justify-content: center;
     background-color: var(--color-primary-light);
-    border: 1px solid var(--color-border-medium);
+    border: var(--border-w) solid var(--color-border-medium);
     border-radius: var(--radius-md);
-    color: var(--color-primary);
+    color: var(--color-primary-ink);
   }
 
   .stat-text {
@@ -293,7 +298,7 @@ export default defineComponent({
 
 .value-card {
   background-color: var(--color-surface-2);
-  border: 1px solid var(--color-border);
+  border: 3px solid rgba(255, 255, 255, 0.95);
   border-radius: var(--radius-lg);
   padding: 2rem 1.5rem;
   transition: border-color 0.2s ease, transform 0.2s ease;
@@ -324,6 +329,7 @@ export default defineComponent({
     color: var(--color-text-secondary);
     line-height: 1.6;
   }
+  box-shadow: var(--shadow-md);
 }
 
 /* Story timeline */
@@ -359,7 +365,7 @@ export default defineComponent({
     font-family: var(--font-mono);
     font-size: 0.75rem;
     font-weight: 700;
-    color: var(--color-primary);
+    color: var(--color-primary-ink);
     letter-spacing: 0.08em;
     margin-bottom: 0.35rem;
   }
@@ -385,7 +391,7 @@ export default defineComponent({
 
 .team-card {
   background-color: var(--color-surface-2);
-  border: 1px solid var(--color-border);
+  border: 3px solid rgba(255, 255, 255, 0.95);
   border-radius: var(--radius-lg);
   padding: 2rem;
   text-align: center;
@@ -408,7 +414,7 @@ export default defineComponent({
     display: block;
     font-size: 0.78rem;
     font-weight: 700;
-    color: var(--color-primary);
+    color: var(--color-primary-ink);
     text-transform: uppercase;
     letter-spacing: 0.04em;
     margin-bottom: 0.85rem;
@@ -419,6 +425,7 @@ export default defineComponent({
     color: var(--color-text-secondary);
     line-height: 1.6;
   }
+  box-shadow: var(--shadow-md);
 }
 
 /* CTA */
@@ -455,6 +462,54 @@ export default defineComponent({
 
     .btn { display: inline-flex; align-items: center; gap: 0.5rem; }
   }
+}
+
+/* =====================================================================
+   THÈME CLAY — surcharges de la page
+   ===================================================================== */
+.about-hero {
+  background-color: transparent;
+  background-image: none;
+  border-bottom: none;
+}
+
+.about-stats {
+  background-color: transparent;
+  border: none;
+}
+.about-stats .stat-item {
+  background-color: var(--color-surface);
+  border: 3px solid rgba(255, 255, 255, 0.95);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: 1rem 1.25rem;
+  .stat-num { font-family: var(--font-heading); font-weight: 900; }
+}
+.about-stats .stat-icon,
+.value-icon {
+  width: 60px;
+  height: 60px;
+  border: none;
+  border-radius: 18px;
+  background-color: var(--pastel-mint);
+  box-shadow: var(--clay-inner), 3px 4px 10px rgba(19, 78, 74, 0.08);
+}
+.about-stats .stat-item:nth-child(2) .stat-icon { background-color: var(--pastel-butter); }
+.about-stats .stat-item:nth-child(3) .stat-icon { background-color: var(--pastel-sky); }
+.about-stats .stat-item:nth-child(4) .stat-icon { background-color: var(--pastel-peach); }
+.value-card:nth-child(2) .value-icon { background-color: var(--pastel-sky); }
+.value-card:nth-child(3) .value-icon { background-color: var(--pastel-lilac); }
+.value-card:nth-child(4) .value-icon { background-color: var(--pastel-butter); }
+.about-cta-card {
+  --color-primary: #5eead4;
+  --color-primary-ink: #5eead4;
+  --color-primary-light: rgba(94, 234, 212, 0.16);
+  
+  border-radius: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.6);
+  border-bottom: 4px solid rgba(255, 255, 255, 0.6);
+  box-shadow: var(--shadow-xl), inset 0 4px 0 rgba(255, 255, 255, 0.08);
+  overflow: hidden;
 }
 
 @media (max-width: 1024px) {

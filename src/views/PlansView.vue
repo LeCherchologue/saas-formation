@@ -2,124 +2,119 @@
   <div class="plans-page">
     <div class="plans-hero">
       <div class="container">
-        <span class="badge badge-yellow">Tarifs Simples & Transparents</span>
-        <h1>Comparez nos formules d'apprentissage</h1>
-        <p>Commencez gratuitement ou passez à la formule Pro pour débloquer les certificats vérifiables et le volume horaire modulable.</p>
+        <span class="badge badge-yellow">Tarifs simples & transparents</span>
+        <h1>Apprenez gratuitement, payez seulement le certificat</h1>
+        <p>Toutes les formations sont en accès libre. À la fin du parcours, obtenez votre certificat officiel pour 5 100 FCFA.</p>
       </div>
     </div>
 
     <div class="container plans-content-grid">
-      <!-- Plan 1: Free -->
+      <!-- Formations -->
       <div class="plan-card">
         <div class="plan-header">
-          <span class="plan-name">Formule Découverte</span>
+          <span class="plan-name">Formations</span>
           <div class="price-line">
-            <span class="currency">0 €</span>
+            <span class="currency">0 FCFA</span>
             <span class="period">/ pour toujours</span>
           </div>
-          <p class="plan-pitch">Idéal pour explorer les bases et tester la plateforme sans engagement.</p>
+          <p class="plan-pitch">Créez votre compte et accédez à toutes les formations du catalogue.</p>
         </div>
 
         <ul class="plan-features">
-          <li><app-icon name="check" :size="16" class="ico-yes" /> Accès aux leçons théoriques fondamentales</li>
-          <li><app-icon name="check" :size="16" class="ico-yes" /> Rythme express (jusqu'à 10h)</li>
-          <li><app-icon name="check" :size="16" class="ico-yes" /> Auto-évaluations et quiz d'entraînement</li>
-          <li><app-icon name="check" :size="16" class="ico-yes" /> Accès communautaire</li>
-          <li class="disabled"><app-icon name="x" :size="16" class="ico-no" /> Certificat officiel avec QR code</li>
-          <li class="disabled"><app-icon name="x" :size="16" class="ico-no" /> Personnalisation au-delà de 20 heures</li>
-          <li class="disabled"><app-icon name="x" :size="16" class="ico-no" /> Ressources & gabarits professionnels téléchargeables</li>
+          <li><app-icon name="check" :size="16" class="ico-yes" /> Accès à toutes les formations</li>
+          <li><app-icon name="check" :size="16" class="ico-yes" /> Leçons, quiz corrigés et exercices de code</li>
+          <li><app-icon name="check" :size="16" class="ico-yes" /> Parcours guidé, étape par étape</li>
+          <li><app-icon name="check" :size="16" class="ico-yes" /> Suivi de progression dans votre espace</li>
+          <li class="disabled"><app-icon name="x" :size="16" class="ico-no" /> Certificat officiel</li>
         </ul>
 
-        <router-link to="/courses" class="btn btn-secondary btn-block">
-          Commencer sans frais
+        <router-link to="/connexion?mode=register" class="btn btn-secondary btn-block">
+          Créer mon compte gratuit
         </router-link>
       </div>
 
-      <!-- Plan 2: Pro (Featured) -->
+      <!-- Certificat (mis en avant) -->
       <div class="plan-card featured-pro">
-        <div class="popular-ribbon"><app-icon name="star" :size="12" filled /> LE PLUS POPULAIRE</div>
+        <div class="popular-ribbon"><app-icon name="star" :size="12" filled /> EN FIN DE PARCOURS</div>
         <div class="plan-header">
-          <span class="plan-name">Pro Certification Pass</span>
+          <span class="plan-name">Certificat officiel</span>
           <div class="price-line">
-            <span class="currency">19 €</span>
-            <span class="period">/ mois (ou 149 € à vie)</span>
+            <span class="currency">5 100 FCFA</span>
+            <span class="period">/ par formation terminée</span>
           </div>
-          <p class="plan-pitch">Tout ce dont vous avez besoin pour certifier vos compétences et booster votre CV.</p>
+          <p class="plan-pitch">Payable une seule fois, quand toute la formation est validée.</p>
         </div>
 
         <ul class="plan-features">
-          <li><app-icon name="check" :size="16" class="ico-yes" /> <strong>Volume horaire 100% modulable (4h à 120h)</strong></li>
-          <li><app-icon name="check" :size="16" class="ico-yes" /> <strong>Certificats officiels illimités</strong> avec ID cryptographique & QR Code</li>
-          <li><app-icon name="check" :size="16" class="ico-yes" /> Mention officielle du nombre d'heures réelles</li>
-          <li><app-icon name="check" :size="16" class="ico-yes" /> Téléchargement haute résolution PDF & intégration LinkedIn</li>
-          <li><app-icon name="check" :size="16" class="ico-yes" /> Accès complet à l'ensemble du catalogue et modules experts</li>
-          <li><app-icon name="check" :size="16" class="ico-yes" /> Tous les gabarits, fichiers Figma, cheatsheets & codes sources</li>
+          <li><app-icon name="check" :size="16" class="ico-yes" /> <strong>Certificat officiel</strong> avec numéro unique et QR code</li>
+          <li><app-icon name="check" :size="16" class="ico-yes" /> Mention du volume horaire et du score obtenu</li>
+          <li><app-icon name="check" :size="16" class="ico-yes" /> Vérification par l'équipe Debugger</li>
+          <li><app-icon name="check" :size="16" class="ico-yes" /> Téléchargement PDF / impression</li>
+          <li><app-icon name="check" :size="16" class="ico-yes" /> Paiement par <strong>Airtel Money</strong>, <strong>Moov Money</strong> ou <strong>Visa</strong></li>
         </ul>
 
         <router-link to="/courses" class="btn btn-accent btn-lg btn-block">
-          Débloquer le Pass Pro
+          Choisir une formation
           <app-icon name="arrow-right" :size="16" />
         </router-link>
       </div>
 
-      <!-- Plan 3: Enterprise -->
+      <!-- Entreprises -->
       <div class="plan-card">
         <div class="plan-header">
-          <span class="plan-name">Entreprises & Équipes</span>
+          <span class="plan-name">Entreprises & équipes</span>
           <div class="price-line">
-            <span class="currency">Sur-mesure</span>
+            <span class="currency">Sur devis</span>
           </div>
-          <p class="plan-pitch">Solution complète de montée en compétences pour vos collaborateurs.</p>
+          <p class="plan-pitch">Formez vos collaborateurs et suivez leur progression.</p>
         </div>
 
         <ul class="plan-features">
-          <li><app-icon name="check" :size="16" class="ico-yes" /> Tout le contenu du Pass Pro pour toute l'équipe</li>
-          <li><app-icon name="check" :size="16" class="ico-yes" /> Tableau de bord RH & analytics de progression</li>
-          <li><app-icon name="check" :size="16" class="ico-yes" /> Parcours de formation sur-mesure pour votre entreprise</li>
-          <li><app-icon name="check" :size="16" class="ico-yes" /> Intégration SSO & conformité SIRH / LMS</li>
-          <li><app-icon name="check" :size="16" class="ico-yes" /> Certificats cobrandés avec le logo de votre société</li>
-          <li><app-icon name="check" :size="16" class="ico-yes" /> Account Manager dédié</li>
+          <li><app-icon name="check" :size="16" class="ico-yes" /> Toutes les formations pour votre équipe</li>
+          <li><app-icon name="check" :size="16" class="ico-yes" /> Certificats groupés à tarif négocié</li>
+          <li><app-icon name="check" :size="16" class="ico-yes" /> Parcours sur mesure pour votre entreprise</li>
+          <li><app-icon name="check" :size="16" class="ico-yes" /> Interlocuteur dédié</li>
         </ul>
 
         <router-link to="/businesses" class="btn btn-primary btn-block">
-          Demander une démo entreprise
+          Demander un devis
         </router-link>
       </div>
     </div>
 
-    <!-- FAQ Section -->
+    <!-- FAQ -->
     <div class="container faq-section">
       <div class="section-header">
-        <span class="subtitle">Questions Fréquentes</span>
+        <span class="subtitle">Questions fréquentes</span>
         <h2>Tout savoir sur les certificats Debugger</h2>
       </div>
 
       <div class="faq-grid">
         <div class="faq-item">
-          <h4>Comment est déterminé le nombre d'heures sur le certificat ?</h4>
+          <h4>Quand puis-je obtenir mon certificat ?</h4>
           <p>
-            Vous choisissez votre volume horaire sur notre réglette interactive (de 4h à 120h). Le programme s'adapte en conséquence et le certificat officiel final atteste du volume exact que vous avez sélectionné et validé.
+            Quand toute la formation est terminée : toutes les leçons lues, tous les quiz réussis (70 % minimum) et, selon la formation, tous les exercices de code et le projet final déposés. Les étapes se suivent dans l'ordre : on ne peut pas en sauter.
           </p>
         </div>
 
         <div class="faq-item">
-          <h4>Les certificats Debugger sont-ils reconnus par les recruteurs ?</h4>
+          <h4>Comment payer les 5 100 FCFA ?</h4>
           <p>
-            Oui. Chaque certificat dispose d'un QR code et d'un lien d'authentification publique infalsifiable (ex: <code>debugger.com/verify/DBG-...</code>) permettant à tout employeur de valider vos acquis en 1 clic.
+            Depuis votre espace ou à la fin de la formation, choisissez Airtel Money, Moov Money (avec votre numéro de téléphone) ou une carte Visa. Le certificat est disponible dès la confirmation du paiement.
           </p>
         </div>
 
         <div class="faq-item">
           <h4>Puis-je suivre plusieurs formations en parallèle ?</h4>
           <p>
-            Absolument. Votre espace apprenant vous permet de suivre simultanément autant de formations que vous le désirez et de progresser à votre propre rythme.
+            Oui. Votre espace apprenant vous permet de suivre autant de formations que vous le souhaitez, chacune à votre rythme.
           </p>
         </div>
 
         <div class="faq-item">
-          <h4>Existe-t-il une garantie de satisfaction ?</h4>
+          <h4>Comment un employeur vérifie-t-il mon certificat ?</h4>
           <p>
-            Toutes nos formations peuvent être essayées gratuitement dès les premiers modules pour vous assurer de la pertinence des enseignements.
+            Chaque certificat porte un numéro unique (ex. <code>DBG-2026-…</code>). L'équipe Debugger vérifie son authenticité sur demande, à partir de ce numéro ou du QR code.
           </p>
         </div>
       </div>
@@ -174,7 +169,7 @@ export default defineComponent({
   background-color: var(--color-surface-2);
   border-radius: var(--radius-xl);
   padding: 2.5rem;
-  border: 1px solid var(--color-border);
+  border: 3px solid rgba(255, 255, 255, 0.95);
   box-shadow: var(--shadow-md);
   display: flex;
   flex-direction: column;
@@ -194,12 +189,12 @@ export default defineComponent({
       align-items: center;
       gap: 0.3rem;
       background-color: var(--color-primary);
-      color: #0a1f16;
+      color: #042f2e;
       font-size: 0.72rem;
       font-weight: 800;
       padding: 0.35rem 1rem;
       border-radius: var(--radius-full);
-      box-shadow: 0 4px 12px rgba(52, 211, 153, 0.4);
+      box-shadow: 0 4px 12px rgba(20, 184, 166, 0.4);
       white-space: nowrap;
     }
   }
@@ -211,7 +206,7 @@ export default defineComponent({
   .plan-name {
     font-size: 1.1rem;
     font-weight: 700;
-    color: var(--color-primary);
+    color: var(--color-primary-ink);
     text-transform: uppercase;
     display: block;
     margin-bottom: 0.5rem;
@@ -258,7 +253,7 @@ export default defineComponent({
     color: var(--color-text);
     line-height: 1.4;
 
-    .ico-yes { color: var(--color-primary); margin-top: 0.15rem; }
+    .ico-yes { color: var(--color-primary-ink); margin-top: 0.15rem; }
     .ico-no { color: var(--color-text-light); margin-top: 0.15rem; }
 
     &.disabled {
@@ -280,7 +275,7 @@ export default defineComponent({
 
 .faq-item {
   background-color: var(--color-surface-2);
-  border: 1px solid var(--color-border);
+  border: 3px solid rgba(255, 255, 255, 0.95);
   border-radius: var(--radius-lg);
   padding: 2rem;
 
@@ -299,12 +294,31 @@ export default defineComponent({
       background-color: var(--color-bg);
       padding: 0.2rem 0.4rem;
       border-radius: 4px;
-      color: var(--color-primary);
+      color: var(--color-primary-ink);
       font-size: 0.85rem;
-      border: 1px solid var(--color-border);
+      border: var(--border-w) solid var(--color-border);
     }
   }
+  box-shadow: var(--shadow-md);
 }
+
+/* =====================================================================
+   THÈME CLAY — surcharges de la page
+   ===================================================================== */
+.plans-hero {
+  background-color: transparent;
+  background-image: none;
+  border-bottom: none;
+}
+
+/* Liste des avantages : icône en colonne fixe, le texte (même avec <strong>) reste d'un bloc */
+.plan-features li {
+  display: block;
+  position: relative;
+  padding-left: 1.65rem;
+  .ico-yes, .ico-no { position: absolute; left: 0; top: 0.1rem; }
+}
+.faq-item h3, .faq-item h4 { font-family: var(--font-heading); font-weight: 800; }
 
 @media (max-width: 1024px) {
   .plans-content-grid {

@@ -43,11 +43,11 @@
           <div class="logo-icon">
             <svg viewBox="0 0 56 40" fill="none" xmlns="http://www.w3.org/2000/svg">
               <!-- Left bracket < -->
-              <path d="M14 8L4 20L14 32" stroke="#14171a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M14 8L4 20L14 32" stroke="#134e4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
               <!-- Right bracket > -->
-              <path d="M42 8L52 20L42 32" stroke="#14171a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M42 8L52 20L42 32" stroke="#134e4a" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
               <!-- Mint slash / -->
-              <path d="M32 6L24 34" stroke="#34d399" stroke-width="4" stroke-linecap="round"/>
+              <path d="M32 6L24 34" stroke="#14b8a6" stroke-width="4" stroke-linecap="round"/>
             </svg>
           </div>
           <div class="logo-text-block">
@@ -99,32 +99,43 @@
             </svg>
             Entreprises
           </router-link>
-          <router-link to="/verify" class="nav-link" @click="mobileOpen = false">
+          <router-link v-if="isAdmin" to="/admin" class="nav-link" @click="mobileOpen = false">
             <!-- Shield check icon -->
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/>
             </svg>
-            Vérifier diplôme
+            Vérifier les diplômes
           </router-link>
 
           <div class="mobile-dash-link">
-            <router-link to="/dashboard" class="btn btn-primary btn-sm" @click="mobileOpen = false">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
-              </svg>
-              Mon Espace ({{ enrollCount }})
-            </router-link>
+            <template v-if="user">
+              <router-link :to="spaceLink" class="btn btn-primary btn-sm" @click="mobileOpen = false">{{ spaceLabel }}</router-link>
+              <button class="btn btn-secondary btn-sm" @click="logout">Déconnexion</button>
+            </template>
+            <template v-else>
+              <router-link to="/connexion" class="btn btn-secondary btn-sm" @click="mobileOpen = false">Se connecter</router-link>
+              <router-link to="/connexion?mode=register" class="btn btn-primary btn-sm" @click="mobileOpen = false">Créer un compte</router-link>
+            </template>
           </div>
         </nav>
 
         <!-- Actions -->
         <div class="nav-actions">
-          <router-link to="/dashboard" class="btn btn-primary btn-sm desktop-only">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
-            </svg>
-            Mon Espace ({{ enrollCount }})
-          </router-link>
+          <template v-if="user">
+            <router-link :to="spaceLink" class="btn btn-primary btn-sm desktop-only">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/>
+              </svg>
+              {{ spaceLabel }}
+            </router-link>
+            <button class="icon-btn desktop-only" :title="'Se déconnecter (' + user.email + ')'" aria-label="Se déconnecter" @click="logout">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            </button>
+          </template>
+          <template v-else>
+            <router-link to="/connexion" class="nav-link desktop-only">Se connecter</router-link>
+            <router-link to="/connexion?mode=register" class="btn btn-primary btn-sm desktop-only">Créer un compte</router-link>
+          </template>
           <button class="mobile-menu-btn" @click="mobileOpen = !mobileOpen" aria-label="Menu">
             <svg v-if="!mobileOpen" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/>
@@ -158,7 +169,15 @@ export default defineComponent({
 
     const isBiz = computed(() => route.path.startsWith('/businesses'))
     const selectedLanguage = computed(() => store.state.selectedLanguage)
-    const enrollCount = computed(() => Object.keys(store.state.enrollments || {}).length)
+    const user = computed(() => store.state.user)
+    const isAdmin = computed(() => store.getters.isAdmin)
+    const spaceLink = computed(() => isAdmin.value ? '/admin' : '/espace')
+    const spaceLabel = computed(() => isAdmin.value ? 'Administration' : `Mon espace (${store.state.myCourses.length})`)
+    const logout = () => {
+      store.dispatch('logout')
+      mobileOpen.value = false
+      router.push('/')
+    }
 
     const onScroll = () => { isScrolled.value = window.scrollY > 20 }
     onMounted(() => window.addEventListener('scroll', onScroll))
@@ -174,12 +193,18 @@ export default defineComponent({
       mobileOpen.value = false
     }
 
-    return { isScrolled, mobileOpen, search, searchFocused, isBiz, selectedLanguage, enrollCount, changeLang, handleSearch }
+    return { isScrolled, mobileOpen, search, searchFocused, isBiz, selectedLanguage, user, isAdmin, spaceLink, spaceLabel, logout, changeLang, handleSearch }
   }
 })
 </script>
 
 <style scoped lang="scss">
+.icon-btn {
+  width: 40px; height: 40px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center;
+  color: var(--color-text-secondary); background: var(--color-surface-3); box-shadow: var(--shadow-sm);
+  &:hover { color: var(--color-primary-ink); }
+}
+.mobile-dash-link { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 .header-wrapper {
   position: sticky;
   top: 0;
@@ -223,14 +248,14 @@ export default defineComponent({
   &:hover { color: var(--color-text-secondary); }
 
   &.active {
-    color: var(--color-primary);
+    color: var(--color-primary-ink);
     border-bottom-color: var(--color-primary);
   }
 }
 
 .b2b-chip {
   background-color: var(--color-primary-light);
-  color: var(--color-primary);
+  color: var(--color-primary-ink);
   font-size: 0.6rem;
   font-weight: 800;
   padding: 0.1rem 0.4rem;
@@ -311,7 +336,7 @@ export default defineComponent({
     font-family: var(--font-mono);
     text-transform: uppercase;
     letter-spacing: 0.14em;
-    color: var(--color-primary);
+    color: var(--color-primary-ink);
     font-weight: 600;
   }
 }
@@ -324,7 +349,7 @@ export default defineComponent({
   align-items: center;
   gap: 0.5rem;
   background-color: var(--color-surface-2);
-  border: 1px solid var(--color-border);
+  border: var(--border-w) solid var(--color-border);
   border-radius: var(--radius-full);
   padding: 0.4rem 1rem;
   transition: all 0.2s ease;
@@ -381,7 +406,7 @@ export default defineComponent({
   }
 
   &.router-link-active {
-    color: var(--color-primary);
+    color: var(--color-primary-ink);
     background-color: var(--color-primary-light);
   }
 }
@@ -407,7 +432,64 @@ export default defineComponent({
   height: 36px;
   border-radius: var(--radius-md);
   background-color: var(--color-surface-2);
-  border: 1px solid var(--color-border);
+  border: var(--border-w) solid var(--color-border);
+}
+
+/* =====================================================================
+   THÈME CLAY — barre de navigation flottante
+   ===================================================================== */
+.top-bar {
+  background-color: transparent;
+  border-bottom: none;
+}
+.main-header {
+  background-color: transparent;
+  border-bottom: none;
+  padding: 0.25rem 0 0.5rem;
+  &.scrolled {
+    background-color: transparent;
+    backdrop-filter: none;
+    box-shadow: none;
+  }
+}
+.nav-inner {
+  height: 64px;
+  padding: 0 0.75rem 0 1.1rem;
+  background-color: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(14px);
+  border: 3px solid rgba(255, 255, 255, 0.95);
+  border-radius: 22px;
+  box-shadow: var(--shadow-md);
+}
+.logo-name { font-family: var(--font-heading); font-weight: 900; }
+.nav-search {
+  background-color: var(--color-surface-3);
+  border: 2px solid transparent;
+  box-shadow: var(--shadow-pressed);
+  &.focused {
+    background-color: var(--color-surface);
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 4px var(--color-primary-glow);
+  }
+}
+.nav-link {
+  min-height: 40px;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  border-radius: 14px;
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.25s var(--ease-bounce);
+  &:hover { background-color: var(--color-surface-3); transform: translateY(-1px); }
+  &.router-link-active {
+    background-color: var(--pastel-mint);
+    box-shadow: var(--clay-inner), 2px 3px 8px rgba(19, 78, 74, 0.08);
+  }
+}
+.audience-tab { font-family: var(--font-heading); font-weight: 800; }
+.b2b-chip { border-radius: var(--radius-full); }
+.mobile-menu-btn {
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  border-radius: 14px;
+  box-shadow: var(--shadow-sm);
 }
 
 @media (max-width: 1020px) {
@@ -424,7 +506,7 @@ export default defineComponent({
     flex-direction: column;
     align-items: flex-start;
     position: fixed;
-    top: 104px;
+    top: 112px;
     left: 0;
     width: 100%;
     background-color: var(--color-surface);

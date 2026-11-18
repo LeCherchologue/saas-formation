@@ -1,504 +1,253 @@
 <template>
-  <div class="dashboard-page">
-    <!-- Top Welcome Banner -->
-    <div class="dash-hero">
-      <div class="container dash-hero-inner">
-        <div class="user-profile-summary">
-          <img :src="user.avatar" :alt="user.name" class="user-big-avatar" />
-          <div class="user-info">
-            <span class="badge badge-yellow">Compte Apprenant Actif</span>
-            <h1>Bonjour, {{ user.name }}</h1>
-            <p>{{ user.email }} • Plan : <strong>Pro Certification Pass</strong></p>
-          </div>
+  <div class="dashboard">
+    <!-- Bandeau -->
+    <section class="dash-hero">
+      <div class="container hero-inner">
+        <div>
+          <span class="badge badge-yellow">Espace apprenant</span>
+          <h1>Bonjour {{ user ? user.firstName : '' }} 👋</h1>
+          <p class="hero-sub">{{ user ? user.email : '' }} · Formations gratuites, certificat à {{ certifPrice }}</p>
         </div>
-
-        <!-- Quick Summary Metrics -->
-        <div class="dash-metrics-grid">
-          <div class="metric-card">
-            <span class="m-num">{{ enrolledCoursesList.length }}</span>
-            <span class="m-label">Formation(s) en cours</span>
-          </div>
-          <div class="metric-card">
-            <span class="m-num">{{ certificatesList.length }}</span>
-            <span class="m-label">Certificat(s) officiel(s)</span>
-          </div>
-          <div class="metric-card">
-            <span class="m-num">{{ totalHoursAccumulated }}h</span>
-            <span class="m-label">Volume certifié total</span>
-          </div>
+        <div class="hero-stats">
+          <div class="h-stat"><strong>{{ inProgress.length }}</strong><span>en cours</span></div>
+          <div class="h-stat"><strong>{{ finished.length }}</strong><span>terminée(s)</span></div>
+          <div class="h-stat"><strong>{{ paidCerts.length }}</strong><span>certificat(s)</span></div>
         </div>
       </div>
-    </div>
+    </section>
 
-    <!-- Main Dashboard Content -->
-    <div class="container dash-main-content">
-      <!-- Section 1: Active Courses -->
-      <section class="dash-section">
-        <div class="dash-section-header">
-          <div>
-            <h2>Mes formations en cours</h2>
-            <p>Reprenez votre progression là où vous l'avez laissée.</p>
-          </div>
-          <router-link to="/courses" class="btn btn-secondary btn-sm">
-            + Ajouter une formation
-          </router-link>
+    <div class="container">
+      <p v-if="error" class="form-error" role="alert">{{ error }}</p>
+
+      <!-- Mes formations -->
+      <section class="block" aria-labelledby="mes-formations">
+        <div class="block-head">
+          <h2 id="mes-formations">Mes formations</h2>
+          <p>Reprenez là où vous vous êtes arrêté. Chaque étape se débloque après la précédente.</p>
         </div>
 
-        <div v-if="enrolledCoursesList.length > 0" class="enrolled-courses-grid">
-          <div
-            v-for="item in enrolledCoursesList"
-            :key="item.course.id"
-            class="enrolled-card"
-          >
-            <div class="card-top">
-              <img :src="item.course.thumbnail" :alt="item.course.title" class="enrolled-thumb" />
-              <div class="enrolled-title-block">
-                <span class="enrolled-cat">{{ item.course.categoryLabel }}</span>
-                <h3>
-                  <router-link :to="'/learn/' + item.course.id">
-                    {{ item.course.title }}
+        <div v-if="!myCourses.length" class="empty clay">
+          <span class="empty-ico"><icon-3d name="rocket" :size="56" /></span>
+          <div>
+            <h3>Vous n'avez commencé aucune formation</h3>
+            <p>Choisissez une formation ci-dessous : elles sont toutes gratuites.</p>
+          </div>
+        </div>
+
+        <div v-else class="my-grid">
+          <article v-for="m in myCourses" :key="m.enrollmentId" class="my-card clay">
+            <img :src="m.course.thumbnail" :alt="''" class="my-thumb" loading="lazy" />
+            <div class="my-body">
+              <span class="my-cat">{{ m.course.categoryLabel }}</span>
+              <h3>{{ m.course.title }}</h3>
+              <div class="progress-row">
+                <div class="progress-track"><div class="progress-fill" :style="{ width: m.progress.percent + '%' }"></div></div>
+                <span>{{ m.progress.percent }} %</span>
+              </div>
+              <p class="my-meta">{{ m.progress.done }} / {{ m.progress.total }} étapes · {{ m.course.hours }} h</p>
+
+              <div class="my-actions">
+                <template v-if="m.certification && m.certification.status === 'payee'">
+                  <router-link :to="'/certificat/' + m.certification.numero" class="btn btn-primary btn-sm">
+                    <app-icon name="award" :size="14" /> Mon certificat
                   </router-link>
-                </h3>
-                <span class="hours-tag">
-                  <app-icon name="zap" :size="13" />
-                  {{ item.enrollment.chosenHours }}h certifiées prévues
-                </span>
+                </template>
+                <template v-else-if="m.certification && m.certification.status === 'en_attente_paiement'">
+                  <button class="btn btn-accent btn-sm" @click="payFor = m.certification">
+                    <app-icon name="credit-card" :size="14" /> Payer le certificat ({{ formatPrice(m.certification.price) }})
+                  </button>
+                </template>
+                <router-link v-else :to="'/learn/' + m.course.slug" class="btn btn-primary btn-sm">
+                  {{ m.progress.done ? 'Continuer' : 'Commencer' }} <app-icon name="arrow-right" :size="14" />
+                </router-link>
               </div>
             </div>
-
-            <!-- Progress Bar -->
-            <div class="enrolled-progress">
-              <div class="p-labels">
-                <span>Progression globale</span>
-                <strong>{{ getProgress(item.course.id) }}%</strong>
-              </div>
-              <div class="track">
-                <div class="fill" :style="{ width: getProgress(item.course.id) + '%' }"></div>
-              </div>
-            </div>
-
-            <!-- Action buttons -->
-            <div class="card-actions">
-              <router-link :to="'/learn/' + item.course.id" class="btn btn-primary btn-sm">
-                Continuer les leçons
-                <app-icon name="arrow-right" :size="14" />
-              </router-link>
-              <router-link
-                v-if="item.enrollment.certificateId"
-                :to="'/verify/' + item.enrollment.certificateId"
-                class="btn btn-secondary btn-sm"
-              >
-                <app-icon name="award" :size="14" />
-                Voir mon certificat
-              </router-link>
-            </div>
-          </div>
-        </div>
-
-        <div v-else class="empty-enrolled-box">
-          <p>Vous n'êtes pas encore inscrit à une formation.</p>
-          <router-link to="/courses" class="btn btn-primary">Explorer le catalogue</router-link>
+          </article>
         </div>
       </section>
 
-      <!-- Section 2: Earned Certificates -->
-      <section class="dash-section">
-        <div class="dash-section-header">
-          <div>
-            <h2>Mes Certificats de Réussite</h2>
-            <p>Documents officiels vérifiables auprès des recruteurs et employeurs.</p>
-          </div>
+      <!-- Catalogue -->
+      <section class="block" aria-labelledby="decouvrir">
+        <div class="block-head">
+          <h2 id="decouvrir">Toutes les formations</h2>
+          <p>Accès libre et gratuit. Seule la certification finale est payante.</p>
         </div>
-
-        <div v-if="certificatesList.length > 0" class="certs-table-card">
-          <div class="certs-list">
-            <div
-              v-for="cert in certificatesList"
-              :key="cert.id"
-              class="cert-item-row"
-            >
-              <div class="cert-left">
-                <span class="cert-icon"><app-icon name="award" :size="24" /></span>
-                <div class="cert-meta">
-                  <h4>{{ cert.courseTitle }}</h4>
-                  <div class="cert-sub">
-                    <span>ID : <strong class="cert-id-code">{{ cert.id }}</strong></span>
-                    <span>•</span>
-                    <span>Volume certifié : <strong>{{ cert.completedHours }} heures</strong></span>
-                    <span>•</span>
-                    <span>Délivré le : {{ cert.issueDate }}</span>
-                  </div>
-                </div>
-              </div>
-
-              <div class="cert-actions">
-                <router-link :to="'/verify/' + cert.id" class="btn btn-secondary btn-sm">
-                  <app-icon name="eye" :size="14" />
-                  Consulter
-                </router-link>
-                <router-link :to="'/verify/' + cert.id" class="btn btn-primary btn-sm">
-                  <app-icon name="printer" :size="14" />
-                  PDF / Imprimer
-                </router-link>
-              </div>
+        <p v-if="catalogueStatus === 'loading'">Chargement du catalogue…</p>
+        <p v-else-if="catalogueStatus === 'error'" class="form-error">{{ catalogueError }}</p>
+        <div class="cat-grid">
+          <article v-for="c in available" :key="c.id" class="cat-card clay">
+            <img :src="c.thumbnail" alt="" class="cat-thumb" loading="lazy" />
+            <div class="cat-body">
+              <span v-if="c.badge" class="badge badge-yellow">{{ c.badge }}</span>
+              <h3><router-link :to="'/course/' + c.slug">{{ c.title }}</router-link></h3>
+              <p class="cat-meta">{{ c.modulesCount }} modules · {{ c.hours }} h · {{ c.level }}</p>
+              <button class="btn btn-secondary btn-sm" :disabled="enrolling === c.slug" @click="start(c.slug)">
+                {{ enrolling === c.slug ? 'Inscription…' : 'Commencer gratuitement' }}
+              </button>
             </div>
-          </div>
+          </article>
         </div>
+      </section>
 
-        <div v-else class="empty-certs-box">
-          <p>Complétez un module et validez le quiz pour débloquer votre premier certificat officiel !</p>
+      <!-- Certificats -->
+      <section class="block" aria-labelledby="mes-certificats">
+        <div class="block-head">
+          <h2 id="mes-certificats">Mes certificats</h2>
+        </div>
+        <p v-if="!certs.length" class="muted">Vos certificats apparaîtront ici à la fin de chaque formation.</p>
+        <div v-for="c in certs" :key="c.id" class="cert-row clay">
+          <span class="cert-ico"><icon-3d name="medal" :size="40" /></span>
+          <div class="cert-meta">
+            <h3>{{ c.courseTitle }}</h3>
+            <p>N° <code>{{ c.numero }}</code> · {{ c.hours }} h · score {{ c.score }} %</p>
+          </div>
+          <router-link v-if="c.status === 'payee'" :to="'/certificat/' + c.numero" class="btn btn-primary btn-sm">
+            <app-icon name="eye" :size="14" /> Voir
+          </router-link>
+          <button v-else class="btn btn-accent btn-sm" @click="payFor = c">
+            Payer {{ formatPrice(c.price) }}
+          </button>
         </div>
       </section>
     </div>
+
+    <payment-modal v-if="payFor" :certification="payFor" @close="payFor = null" @paid="refresh" />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, computed } from 'vue'
+import { defineComponent, computed, ref, onMounted } from 'vue'
 import { useStore } from 'vuex'
-import { COURSES, Course } from '../data/courses'
-import { CertificateRecord } from '../store'
+import { useRouter } from 'vue-router'
 import AppIcon from '../components/layout/AppIcon.vue'
+import Icon3d from '../components/ui/Icon3d.vue'
+import PaymentModal from '../components/payment/PaymentModal.vue'
+import { Certification, Course, MyCourse, CertificateDetail } from '../api/types'
+import { formatPrice } from '../utils/format'
 
 export default defineComponent({
   name: 'DashboardView',
-  components: { AppIcon },
-  setup() {
+  components: { AppIcon, Icon3d, PaymentModal },
+  setup () {
     const store = useStore()
+    const router = useRouter()
+    const error = ref('')
+    const enrolling = ref('')
+    const payFor = ref<Certification | null>(null)
 
     const user = computed(() => store.state.user)
-    const certificatesList = computed<CertificateRecord[]>(() => store.getters.certificatesList)
-
-    const enrolledCoursesList = computed(() => {
-      const enrollments = store.state.enrollments || {}
-      return Object.keys(enrollments).map(id => {
-        const course = COURSES.find(c => c.id === id)
-        return {
-          course: course || {
-            id,
-            title: 'Formation Debugger',
-            slug: id,
-            categoryLabel: 'Formation',
-            thumbnail: 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=400&q=80'
-          } as Course,
-          enrollment: enrollments[id]
-        }
-      })
+    const myCourses = computed<MyCourse[]>(() => store.state.myCourses)
+    const certs = computed<CertificateDetail[]>(() => store.state.myCertificates)
+    const catalogueStatus = computed(() => store.state.catalogueStatus)
+    const catalogueError = computed(() => store.state.catalogueError)
+    const inProgress = computed(() => myCourses.value.filter(m => m.status !== 'terminee'))
+    const finished = computed(() => myCourses.value.filter(m => m.status === 'terminee'))
+    const paidCerts = computed(() => certs.value.filter(c => c.status === 'payee'))
+    const available = computed<Course[]>(() => {
+      const mine = new Set(myCourses.value.map(m => m.course.slug))
+      return store.state.catalogue.filter((c: Course) => !mine.has(c.slug))
     })
+    const certifPrice = computed(() => formatPrice(store.state.catalogue[0] ? store.state.catalogue[0].certificationPrice : 5100))
 
-    const getProgress = (courseId: string) => {
-      return store.getters.getCourseProgress(courseId)
+    const refresh = async () => {
+      try { await store.dispatch('fetchMySpace') } catch (e: any) { error.value = e.message }
     }
 
-    const totalHoursAccumulated = computed(() => {
-      return certificatesList.value.reduce((acc, c) => acc + (c.completedHours || 0), 0)
+    const start = async (slug: string) => {
+      enrolling.value = slug
+      error.value = ''
+      try {
+        await store.dispatch('enroll', slug)
+        router.push('/learn/' + slug)
+      } catch (e: any) {
+        error.value = e.message
+      } finally {
+        enrolling.value = ''
+      }
+    }
+
+    onMounted(() => {
+      refresh()
+      store.dispatch('fetchCatalogue')
     })
 
     return {
-      user,
-      certificatesList,
-      enrolledCoursesList,
-      getProgress,
-      totalHoursAccumulated
+      user, myCourses, certs, inProgress, finished, paidCerts, available, catalogueStatus, catalogueError,
+      certifPrice, error, enrolling, payFor, start, refresh, formatPrice
     }
   }
 })
 </script>
 
 <style scoped lang="scss">
-.dashboard-page {
-  padding-bottom: 5rem;
-}
+.dashboard { padding-bottom: 4rem; }
 
 .dash-hero {
-  background: linear-gradient(135deg, var(--color-primary-dark) 0%, #0f2f1c 100%);
+  --color-primary: #5eead4;
+  --color-primary-ink: #5eead4;
+  margin: 0 0.75rem 2.5rem;
+  padding: 2.5rem 0;
+  border-radius: 40px;
+  background: linear-gradient(135deg, #0f766e 0%, #042f2e 100%);
+  border: 4px solid rgba(255, 255, 255, 0.6);
+  box-shadow: var(--shadow-xl), inset 0 4px 0 rgba(255, 255, 255, 0.08);
   color: #ffffff;
-  padding: 3.5rem 0;
-  border-bottom: 1px solid var(--color-border);
+  h1 { color: #ffffff; font-size: clamp(1.8rem, 3.5vw, 2.6rem); margin: 0.75rem 0 0.4rem; }
+}
+.hero-inner { display: flex; justify-content: space-between; align-items: center; gap: 2rem; flex-wrap: wrap; }
+.hero-sub { color: #cde7e3; }
+.hero-stats { display: flex; gap: 1rem; flex-wrap: wrap; }
+.h-stat {
+  min-width: 120px; padding: 1rem 1.25rem; border-radius: var(--radius-lg); text-align: center;
+  background: rgba(255, 255, 255, 0.08); border: 2px solid rgba(255, 255, 255, 0.14);
+  box-shadow: inset 0 3px 0 rgba(255, 255, 255, 0.08);
+  strong { display: block; font-family: var(--font-heading); font-weight: 900; font-size: 2rem; color: #5eead4; }
+  span { font-size: 0.85rem; color: #cde7e3; }
 }
 
-.dash-hero-inner {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 2rem;
-  flex-wrap: wrap;
+.block { margin-bottom: 3rem; }
+.block-head {
+  margin-bottom: 1.25rem;
+  h2 { font-size: 1.7rem; }
+  p { color: var(--color-text-secondary); }
 }
+.muted { color: var(--color-text-muted); }
 
-.user-profile-summary {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-
-  .user-big-avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid var(--color-primary);
-  }
-
-  .user-info {
-    h1 {
-      font-size: 2.2rem;
-      color: #ffffff;
-      margin: 0.35rem 0 0.25rem 0;
-    }
-
-    p {
-      color: rgba(255, 255, 255, 0.75);
-      font-size: 0.95rem;
-
-      strong {
-        color: var(--color-primary);
-      }
-    }
-  }
+.empty { display: flex; align-items: center; gap: 1.25rem; padding: 1.5rem; }
+.empty-ico, .cert-ico {
+  flex-shrink: 0; width: 80px; height: 80px; border-radius: 24px; display: flex; align-items: center; justify-content: center;
+  background: var(--pastel-lilac); box-shadow: var(--clay-inner);
 }
+.cert-ico { width: 60px; height: 60px; border-radius: 18px; background: var(--pastel-butter); }
 
-.dash-metrics-grid {
-  display: flex;
-  gap: 1rem;
+.my-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.5rem; }
+.my-card { display: flex; gap: 1rem; padding: 1rem; }
+.my-thumb { width: 96px; height: 96px; object-fit: cover; border-radius: 18px; flex-shrink: 0; }
+.my-body { min-width: 0; flex: 1; h3 { font-size: 1.05rem; margin: 0.2rem 0 0.6rem; } }
+.my-cat { font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-primary-ink); }
+.progress-row { display: flex; align-items: center; gap: 0.6rem; font-weight: 800; font-size: 0.85rem; }
+.progress-track { flex: 1; height: 10px; border-radius: var(--radius-full); background: var(--color-surface-3); box-shadow: var(--shadow-pressed); overflow: hidden; }
+.progress-fill { height: 100%; border-radius: var(--radius-full); background: var(--color-primary); }
+.my-meta { font-size: 0.8rem; color: var(--color-text-muted); margin: 0.35rem 0 0.75rem; }
+.my-actions { display: flex; gap: 0.5rem; flex-wrap: wrap; }
 
-  .metric-card {
-    background-color: rgba(255, 255, 255, 0.06);
-    border: 1px solid rgba(255, 255, 255, 0.15);
-    border-radius: var(--radius-lg);
-    padding: 1.25rem 1.75rem;
-    text-align: center;
-    backdrop-filter: blur(8px);
-
-    .m-num {
-      display: block;
-      font-family: var(--font-heading);
-      font-size: 1.8rem;
-      font-weight: 800;
-      color: var(--color-primary);
-    }
-
-    .m-label {
-      font-size: 0.75rem;
-      color: rgba(255, 255, 255, 0.75);
-      text-transform: uppercase;
-      font-weight: 600;
-    }
-  }
+.cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.25rem; }
+.cat-card { overflow: hidden; display: flex; flex-direction: column; }
+.cat-thumb { height: 130px; object-fit: cover; margin: 8px 8px 0; border-radius: 18px; background: var(--color-surface-3); }
+.cat-body {
+  padding: 1rem 1.25rem 1.25rem; display: grid; gap: 0.5rem; justify-items: start; flex: 1;
+  h3 { font-size: 1rem; line-height: 1.35; }
+  .btn { margin-top: auto; }
 }
+.cat-meta { font-size: 0.82rem; color: var(--color-text-muted); }
 
-.dash-main-content {
-  margin-top: 3.5rem;
-}
+.cert-row { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.25rem; margin-bottom: 0.75rem; flex-wrap: wrap; }
+.cert-meta { flex: 1; min-width: 200px; h3 { font-size: 1.02rem; } p { font-size: 0.85rem; color: var(--color-text-muted); } }
 
-.dash-section {
-  margin-bottom: 4rem;
-}
+.form-error { background: #fee2e2; color: #991b1b; border-radius: var(--radius-sm); padding: 0.75rem 1rem; font-weight: 600; margin-bottom: 1.5rem; }
 
-.dash-section-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 1.75rem;
-
-  h2 {
-    font-size: 1.75rem;
-    color: var(--color-text);
-    margin-bottom: 0.25rem;
-  }
-
-  p {
-    color: var(--color-text-secondary);
-    font-size: 0.95rem;
-  }
-}
-
-.enrolled-courses-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 2rem;
-}
-
-.enrolled-card {
-  background-color: var(--color-surface-2);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  padding: 1.75rem;
-  box-shadow: var(--shadow-sm);
-  display: flex;
-  flex-direction: column;
-  gap: 1.25rem;
-  transition: border-color 0.2s ease;
-
-  &:hover {
-    border-color: var(--color-border-medium);
-  }
-
-  .card-top {
-    display: flex;
-    gap: 1.25rem;
-
-    .enrolled-thumb {
-      width: 90px;
-      height: 90px;
-      border-radius: var(--radius-md);
-      object-fit: cover;
-      flex-shrink: 0;
-    }
-
-    .enrolled-title-block {
-      display: flex;
-      flex-direction: column;
-
-      .enrolled-cat {
-        font-size: 0.75rem;
-        font-weight: 700;
-        color: var(--color-primary);
-        text-transform: uppercase;
-      }
-
-      h3 {
-        font-size: 1.15rem;
-        margin: 0.25rem 0 0.5rem 0;
-        line-height: 1.3;
-
-        a {
-          color: var(--color-text);
-          &:hover {
-            color: var(--color-primary);
-          }
-        }
-      }
-
-      .hours-tag {
-        display: inline-flex;
-        align-items: center;
-        gap: 0.3rem;
-        font-size: 0.8rem;
-        color: var(--color-text-muted);
-        font-weight: 600;
-      }
-    }
-  }
-}
-
-.enrolled-progress {
-  .p-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 0.8rem;
-    color: var(--color-text-secondary);
-    margin-bottom: 0.4rem;
-  }
-
-  .track {
-    width: 100%;
-    height: 8px;
-    background-color: var(--color-bg);
-    border-radius: var(--radius-full);
-    overflow: hidden;
-
-    .fill {
-      height: 100%;
-      background-color: var(--color-primary);
-      transition: width 0.3s ease;
-    }
-  }
-}
-
-.card-actions {
-  display: flex;
-  gap: 0.75rem;
-  padding-top: 0.5rem;
-
-  .btn { display: inline-flex; align-items: center; gap: 0.4rem; }
-}
-
-/* Certs list card */
-.certs-table-card {
-  background-color: var(--color-surface-2);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  overflow: hidden;
-  box-shadow: var(--shadow-sm);
-}
-
-.cert-item-row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.5rem 2rem;
-  border-bottom: 1px solid var(--color-border-subtle);
-  gap: 1.5rem;
-
-  &:last-child {
-    border-bottom: none;
-  }
-
-  .cert-left {
-    display: flex;
-    align-items: center;
-    gap: 1.25rem;
-
-    .cert-icon {
-      width: 52px;
-      height: 52px;
-      flex-shrink: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background-color: var(--color-primary-light);
-      border: 1px solid var(--color-border-medium);
-      border-radius: var(--radius-md);
-      color: var(--color-primary);
-    }
-
-    .cert-meta {
-      h4 {
-        font-size: 1.1rem;
-        color: var(--color-text);
-        margin-bottom: 0.25rem;
-      }
-
-      .cert-sub {
-        display: flex;
-        gap: 0.6rem;
-        font-size: 0.82rem;
-        color: var(--color-text-muted);
-        flex-wrap: wrap;
-
-        .cert-id-code {
-          color: var(--color-primary);
-          font-family: var(--font-mono);
-        }
-      }
-    }
-  }
-
-  .cert-actions {
-    display: flex;
-    gap: 0.75rem;
-    flex-shrink: 0;
-
-    .btn { display: inline-flex; align-items: center; gap: 0.4rem; }
-  }
-}
-
-.empty-enrolled-box, .empty-certs-box {
-  background-color: var(--color-surface-2);
-  border: 1px dashed var(--color-border);
-  border-radius: var(--radius-xl);
-  padding: 3rem;
-  text-align: center;
-  color: var(--color-text-muted);
-}
-
-@media (max-width: 900px) {
-  .enrolled-courses-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .cert-item-row {
-    flex-direction: column;
-    align-items: flex-start;
-  }
+@media (max-width: 560px) {
+  .my-card { flex-direction: column; }
+  .my-thumb { width: 100%; height: 140px; }
 }
 </style>

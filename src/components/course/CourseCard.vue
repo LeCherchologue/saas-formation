@@ -18,14 +18,14 @@
         <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
           <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
         </svg>
-        {{ course.minHours }}h – {{ course.maxHours }}h
+        {{ course.hours }} h · Gratuit
       </div>
     </div>
 
     <!-- Card Body -->
     <div class="card-body">
       <div class="rating-row">
-        <div class="stars">
+        <div v-if="course.reviewsCount" class="stars">
           <!-- Star SVG -->
           <svg width="14" height="14" viewBox="0 0 24 24" fill="#facc15">
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
@@ -33,6 +33,7 @@
           <span class="rating-score">{{ course.rating.toFixed(2) }}</span>
           <span class="reviews-count">({{ course.reviewsCount }})</span>
         </div>
+        <span v-else class="new-chip">Nouvelle formation</span>
         <span class="students-count">
           <!-- Users SVG -->
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -94,11 +95,12 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
+.new-chip { font-size: 0.78rem; font-weight: 800; color: var(--color-primary-ink); }
 .course-card {
   background-color: var(--color-surface);
   border-radius: var(--radius-xl);
   overflow: hidden;
-  border: 1px solid var(--color-border);
+  border: var(--border-w) solid var(--color-border);
   box-shadow: var(--shadow-sm);
   transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   display: flex;
@@ -134,7 +136,7 @@ export default defineComponent({
   .media-overlay {
     position: absolute;
     inset: 0;
-    background: linear-gradient(180deg, rgba(8, 12, 16, 0.3) 0%, rgba(8, 12, 16, 0.72) 100%);
+    background: linear-gradient(180deg, rgba(4, 47, 46, 0.3) 0%, rgba(4, 47, 46, 0.72) 100%);
   }
 }
 
@@ -148,8 +150,8 @@ export default defineComponent({
 }
 
 .category-chip {
-  background-color: rgba(20, 23, 26, 0.82);
-  color: #f5f6f5;
+  background-color: rgba(19, 78, 74, 0.82);
+  color: #f0fdfa;
   font-size: 0.7rem;
   font-weight: 700;
   padding: 0.2rem 0.55rem;
@@ -161,13 +163,13 @@ export default defineComponent({
 }
 
 .highlight-chip {
-  background-color: rgba(52, 211, 153, 0.22);
-  color: #6ee7b7;
+  background-color: rgba(20, 184, 166, 0.22);
+  color: #5eead4;
   font-size: 0.7rem;
   font-weight: 800;
   padding: 0.2rem 0.55rem;
   border-radius: var(--radius-full);
-  border: 1px solid rgba(52, 211, 153, 0.45);
+  border: 1px solid rgba(20, 184, 166, 0.45);
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
@@ -179,14 +181,14 @@ export default defineComponent({
   position: absolute;
   bottom: 0.85rem;
   right: 0.85rem;
-  background-color: rgba(20, 23, 26, 0.78);
+  background-color: rgba(19, 78, 74, 0.78);
   backdrop-filter: blur(8px);
-  color: #6ee7b7;
+  color: #5eead4;
   font-size: 0.72rem;
   font-weight: 700;
   padding: 0.3rem 0.65rem;
   border-radius: var(--radius-full);
-  border: 1px solid rgba(52, 211, 153, 0.3);
+  border: 1px solid rgba(20, 184, 166, 0.3);
   z-index: 2;
   display: flex;
   align-items: center;
@@ -242,7 +244,7 @@ export default defineComponent({
   a {
     color: var(--color-text);
     transition: color 0.2s ease;
-    &:hover { color: var(--color-primary); }
+    &:hover { color: var(--color-primary-ink); }
   }
 }
 
@@ -266,7 +268,7 @@ export default defineComponent({
 
 .skill-tag {
   background-color: var(--color-surface-2);
-  border: 1px solid var(--color-border);
+  border: var(--border-w) solid var(--color-border);
   color: var(--color-text-muted);
   font-size: 0.72rem;
   padding: 0.18rem 0.5rem;
@@ -294,11 +296,58 @@ export default defineComponent({
     height: 30px;
     border-radius: 50%;
     object-fit: cover;
-    border: 1px solid var(--color-border);
+    border: var(--border-w) solid var(--color-border);
   }
 
   .instructor-info { display: flex; flex-direction: column; }
   .instructor-name { font-size: 0.78rem; font-weight: 700; color: var(--color-text); line-height: 1.2; }
   .instructor-role { font-size: 0.68rem; color: var(--color-text-muted); }
 }
+/* =====================================================================
+   THÈME CLAY — carte de formation
+   ===================================================================== */
+.course-card {
+  border: 4px solid rgba(255, 255, 255, 0.95);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-md);
+  transition: transform 0.35s var(--ease-bounce), box-shadow 0.3s ease;
+  &:hover {
+    transform: translateY(-8px) rotate(-0.4deg);
+    box-shadow: var(--shadow-lg);
+  }
+}
+.card-media {
+  margin: 8px 8px 0;
+  border-radius: calc(var(--radius-xl) - 10px);
+  overflow: hidden;
+}
+.category-chip,
+.duration-badge,
+.highlight-chip {
+  border-radius: var(--radius-full);
+  border: 2px solid rgba(255, 255, 255, 0.35);
+  font-family: var(--font-heading);
+  font-weight: 800;
+}
+.highlight-chip {
+  background-color: var(--color-achievement);
+  color: #431407;
+  border-color: rgba(255, 255, 255, 0.6);
+}
+.course-title { font-family: var(--font-heading); font-weight: 800; }
+.skill-tag {
+  background-color: var(--pastel-mint);
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  color: var(--color-primary-ink);
+  border-radius: var(--radius-full);
+  font-weight: 700;
+}
+.card-footer {
+  margin: 0 8px 8px;
+  border-top: none;
+  border-radius: calc(var(--radius-xl) - 10px);
+  background-color: var(--color-surface-3);
+  box-shadow: var(--shadow-pressed);
+}
+
 </style>

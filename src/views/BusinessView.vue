@@ -34,25 +34,25 @@
 
       <div class="biz-features-grid">
         <div class="biz-feature-card">
-          <div class="f-icon"><app-icon name="bar-chart" :size="24" /></div>
+          <div class="f-icon"><icon-3d name="chart" :size="42" /></div>
           <h3>Tableau de bord RH complet</h3>
           <p>Suivez les heures réelles d'apprentissage, les taux de complétion et les compétences validées par vos équipes en temps réel.</p>
         </div>
 
         <div class="biz-feature-card">
-          <div class="f-icon"><app-icon name="clock" :size="24" /></div>
+          <div class="f-icon"><icon-3d name="clock" :size="42" /></div>
           <h3>Zéro perturbation de l'activité</h3>
           <p>Vos collaborateurs apprennent de 30 minutes à 2h par semaine selon leurs disponibilités, avec des leçons fragmentées et efficaces.</p>
         </div>
 
         <div class="biz-feature-card">
-          <div class="f-icon"><app-icon name="award" :size="24" /></div>
+          <div class="f-icon"><icon-3d name="medal" :size="42" /></div>
           <h3>Certifications reconnues & Cobrandées</h3>
           <p>Délivrez des certificats portant le logo officiel de votre société et validés par l'organisme accréditeur Debugger.</p>
         </div>
 
         <div class="biz-feature-card">
-          <div class="f-icon"><app-icon name="briefcase" :size="24" /></div>
+          <div class="f-icon"><icon-3d name="bag" :size="42" /></div>
           <h3>Formateurs d'élite</h3>
           <p>Des enseignements dispensés par des professionnels en poste dans les plus grandes entreprises innovantes.</p>
         </div>
@@ -70,22 +70,22 @@
         <form @submit.prevent="submitForm" class="quote-form-grid">
           <div class="form-group">
             <label>Votre Nom & Prénom</label>
-            <input type="text" v-model="form.name" required placeholder="Ex: Claire Martin" />
+            <input class="clay-input" type="text" v-model="form.name" required placeholder="Ex: Claire Martin" />
           </div>
 
           <div class="form-group">
             <label>Email Professionnel</label>
-            <input type="email" v-model="form.email" required placeholder="Ex: claire.martin@entreprise.com" />
+            <input class="clay-input" type="email" v-model="form.email" required placeholder="Ex: claire.martin@entreprise.com" />
           </div>
 
           <div class="form-group">
             <label>Entreprise & Fonction</label>
-            <input type="text" v-model="form.company" required placeholder="Ex: TechCorp - DRH" />
+            <input class="clay-input" type="text" v-model="form.company" required placeholder="Ex: TechCorp - DRH" />
           </div>
 
           <div class="form-group">
             <label>Nombre de collaborateurs à former</label>
-            <select v-model="form.teamSize">
+            <select class="clay-input" v-model="form.teamSize">
               <option value="5-20">5 à 20 personnes</option>
               <option value="20-100">20 à 100 personnes</option>
               <option value="100-500">100 à 500 personnes</option>
@@ -95,7 +95,7 @@
 
           <div class="form-group full-width">
             <label>Besoins prioritaires & Thématiques ciblées</label>
-            <textarea v-model="form.notes" rows="4" placeholder="Ex: Montée en compétences sur l'IA générative et la cybersécurité..."></textarea>
+            <textarea class="clay-input" v-model="form.notes" rows="4" placeholder="Ex: Montée en compétences sur l'IA générative et la cybersécurité..."></textarea>
           </div>
 
           <div class="full-width text-center">
@@ -117,11 +117,13 @@
 <script lang="ts">
 import { defineComponent, ref } from 'vue'
 import AppIcon from '../components/layout/AppIcon.vue'
+import Icon3d from '../components/ui/Icon3d.vue'
 
 export default defineComponent({
   name: 'BusinessView',
   components: {
-    AppIcon
+    AppIcon,
+    Icon3d
   },
   setup() {
     const form = ref({
@@ -203,7 +205,7 @@ export default defineComponent({
 
 .biz-feature-card {
   background-color: var(--color-surface-2);
-  border: 1px solid var(--color-border);
+  border: 3px solid rgba(255, 255, 255, 0.95);
   border-radius: var(--radius-lg);
   padding: 2rem 1.5rem;
   box-shadow: var(--shadow-sm);
@@ -223,9 +225,9 @@ export default defineComponent({
     align-items: center;
     justify-content: center;
     background-color: var(--color-primary-light);
-    border: 1px solid var(--color-border-medium);
+    border: var(--border-w) solid var(--color-border-medium);
     border-radius: var(--radius-md);
-    color: var(--color-primary);
+    color: var(--color-primary-ink);
   }
 
   h3 {
@@ -245,7 +247,7 @@ export default defineComponent({
 .quote-card {
   background: var(--color-surface-2);
   border-radius: var(--radius-xl);
-  border: 1px solid var(--color-border);
+  border: 3px solid rgba(255, 255, 255, 0.95);
   box-shadow: var(--shadow-xl);
   padding: 3.5rem;
   max-width: 840px;
@@ -289,7 +291,7 @@ export default defineComponent({
 
     input, select, textarea {
       background-color: var(--color-surface);
-      border: 1px solid var(--color-border);
+      border: var(--border-w) solid var(--color-border);
       border-radius: var(--radius-md);
       padding: 0.8rem 1rem;
       font-size: 0.95rem;
@@ -301,7 +303,7 @@ export default defineComponent({
 
       &:focus {
         border-color: var(--color-primary);
-        box-shadow: 0 0 0 3px rgba(52, 211, 153, 0.15);
+        box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
       }
     }
 
@@ -317,6 +319,32 @@ export default defineComponent({
   align-items: center;
   gap: 0.5rem;
 }
+
+/* =====================================================================
+   THÈME CLAY — surcharges de la page
+   ===================================================================== */
+.biz-hero {
+  background-color: transparent;
+  background-image: none;
+  border-bottom: none;
+}
+
+.biz-feature-card {
+  transition: transform 0.35s var(--ease-bounce), box-shadow 0.3s ease;
+  &:hover { transform: translateY(-8px); box-shadow: var(--shadow-lg); }
+  .f-icon {
+    width: 68px;
+    height: 68px;
+    border: none;
+    border-radius: 20px;
+    background-color: var(--pastel-mint);
+    box-shadow: var(--clay-inner), 3px 4px 10px rgba(19, 78, 74, 0.08);
+  }
+  &:nth-child(2) .f-icon { background-color: var(--pastel-sky); }
+  &:nth-child(3) .f-icon { background-color: var(--pastel-butter); }
+  &:nth-child(4) .f-icon { background-color: var(--pastel-peach); }
+}
+img { border-radius: var(--radius-xl); }
 
 @media (max-width: 1024px) {
   .biz-hero-inner {

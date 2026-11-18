@@ -5,7 +5,7 @@
       <div class="container">
         <span class="badge badge-yellow">Catalogue Complet</span>
         <h1>Toutes les formations certifiantes</h1>
-        <p>Explorez notre sélection de formations professionnelles auto-rythmées avec volume d'heures adaptable.</p>
+        <p>Explorez notre sélection de formations professionnelles gratuites, à suivre étape par étape. Seul le certificat est payant.</p>
 
         <!-- Search & Filter Controls Bar -->
         <div class="catalog-search-box">
@@ -34,7 +34,7 @@
             :class="{ 'active': activeCategory === cat.id }"
             @click="activeCategory = cat.id"
           >
-            <app-icon :name="cat.icon" :size="14" />
+            <icon-3d :name="cat.icon3d" :size="22" />
             <span>{{ cat.label }}</span>
           </button>
         </div>
@@ -47,7 +47,7 @@
               <option value="all">Tous les niveaux</option>
               <option value="Débutant">Débutant</option>
               <option value="Intermédiaire">Intermédiaire</option>
-              <option value="Tous niveaux">Tous niveaux</option>
+              <option value="Avancé">Avancé</option>
             </select>
           </div>
 
@@ -60,6 +60,12 @@
             </select>
           </div>
         </div>
+      </div>
+
+      <p v-if="catalogueStatus === 'loading'" class="catalogue-state">Chargement des formations…</p>
+      <div v-else-if="catalogueStatus === 'error'" class="catalogue-state error" role="alert">
+        {{ catalogueError }}
+        <button class="btn btn-secondary btn-sm" @click="reload">Réessayer</button>
       </div>
 
       <!-- Results Count -->
@@ -81,7 +87,7 @@
       </div>
 
       <!-- Empty State -->
-      <div v-else class="empty-state">
+      <div v-else-if="catalogueStatus === 'ok'" class="empty-state">
         <div class="empty-icon">
           <app-icon name="search" :size="32" />
         </div>
@@ -99,15 +105,17 @@
 import { defineComponent, ref, computed, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
-import { COURSES, CATEGORIES, Course } from '../data/courses'
+import { CATEGORIES, Course } from '../data/courses'
 import CourseCard from '../components/course/CourseCard.vue'
 import AppIcon from '../components/layout/AppIcon.vue'
+import Icon3d from '../components/ui/Icon3d.vue'
 
 export default defineComponent({
   name: 'CoursesView',
   components: {
     CourseCard,
-    AppIcon
+    AppIcon,
+    Icon3d
   },
   setup() {
     const route = useRoute()
@@ -149,7 +157,7 @@ export default defineComponent({
     }
 
     const filteredCourses = computed(() => {
-      let list = [...COURSES]
+      let list: Course[] = [...store.state.catalogue]
 
       // Search
       if (searchQuery.value.trim() !== '') {
@@ -175,7 +183,7 @@ export default defineComponent({
       if (sortBy.value === 'rating') {
         list.sort((a, b) => b.rating - a.rating)
       } else if (sortBy.value === 'hours-asc') {
-        list.sort((a, b) => a.defaultHours - b.defaultHours)
+        list.sort((a, b) => a.hours - b.hours)
       } else {
         list.sort((a, b) => b.enrolledCount - a.enrolledCount)
       }
@@ -183,7 +191,14 @@ export default defineComponent({
       return list
     })
 
+    const catalogueStatus = computed(() => store.state.catalogueStatus)
+    const catalogueError = computed(() => store.state.catalogueError)
+    const reload = () => store.dispatch('fetchCatalogue', true)
+
     return {
+      catalogueStatus,
+      catalogueError,
+      reload,
       searchQuery,
       activeCategory,
       selectedLevel,
@@ -198,6 +213,7 @@ export default defineComponent({
 </script>
 
 <style scoped lang="scss">
+.catalogue-state { padding: 1rem 0; color: var(--color-text-muted); display: flex; gap: 1rem; align-items: center; &.error { color: #991b1b; font-weight: 600; } }
 .courses-page {
   padding-bottom: 5rem;
 }
@@ -226,7 +242,7 @@ export default defineComponent({
   max-width: 640px;
   margin: 0 auto;
   background-color: var(--color-surface-2);
-  border: 1px solid var(--color-border);
+  border: var(--border-w) solid var(--color-border);
   border-radius: var(--radius-full);
   display: flex;
   align-items: center;
@@ -287,7 +303,7 @@ export default defineComponent({
     padding: 0.5rem 1rem;
     border-radius: var(--radius-full);
     background-color: var(--color-surface-2);
-    border: 1px solid var(--color-border);
+    border: var(--border-w) solid var(--color-border);
     font-size: 0.88rem;
     font-weight: 600;
     color: var(--color-text);
@@ -303,7 +319,7 @@ export default defineComponent({
     &.active {
       background-color: var(--color-primary);
       border-color: var(--color-primary);
-      color: #0a1f16;
+      color: #042f2e;
     }
   }
 }
@@ -321,7 +337,7 @@ export default defineComponent({
 
     select {
       background-color: var(--color-surface-2);
-      border: 1px solid var(--color-border);
+      border: var(--border-w) solid var(--color-border);
       padding: 0.45rem 0.85rem;
       border-radius: var(--radius-sm);
       font-size: 0.85rem;
@@ -353,7 +369,7 @@ export default defineComponent({
     display: inline-flex;
     align-items: center;
     gap: 0.3rem;
-    color: var(--color-primary);
+    color: var(--color-primary-ink);
     font-weight: 600;
     cursor: pointer;
 
@@ -374,7 +390,7 @@ export default defineComponent({
   padding: 4rem 1rem;
   background-color: var(--color-surface-2);
   border-radius: var(--radius-xl);
-  border: 1px solid var(--color-border);
+  border: 3px solid rgba(255, 255, 255, 0.95);
 
   .empty-icon {
     width: 72px;
@@ -384,9 +400,9 @@ export default defineComponent({
     align-items: center;
     justify-content: center;
     background-color: var(--color-primary-light);
-    border: 1px solid var(--color-border-medium);
+    border: var(--border-w) solid var(--color-border-medium);
     border-radius: 50%;
-    color: var(--color-primary);
+    color: var(--color-primary-ink);
   }
 
   h3 {
@@ -399,7 +415,44 @@ export default defineComponent({
     color: var(--color-text-secondary);
     margin-bottom: 1.5rem;
   }
+  box-shadow: var(--shadow-md);
 }
+
+/* =====================================================================
+   THÈME CLAY — surcharges de la page
+   ===================================================================== */
+.courses-hero {
+  background-color: transparent;
+  background-image: none;
+  border-bottom: none;
+}
+
+.catalog-search-box {
+  min-height: 56px;
+  background-color: var(--color-surface);
+  border: 3px solid rgba(255, 255, 255, 0.95);
+  box-shadow: var(--shadow-md);
+}
+.cat-chips-scroll .chip-btn {
+  min-height: 44px;
+  padding-left: 0.5rem;
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  box-shadow: var(--shadow-sm);
+  font-family: var(--font-heading);
+  font-weight: 800;
+  transition: transform 0.25s var(--ease-bounce), box-shadow 0.2s ease, background-color 0.2s ease;
+  &:hover { transform: translateY(-2px); border-color: rgba(255, 255, 255, 0.95); }
+  &.active { border-color: rgba(255, 255, 255, 0.6); box-shadow: var(--shadow-green); }
+}
+.extra-filters .select-group select {
+  min-height: 44px;
+  border-radius: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.95);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  font-weight: 600;
+}
+.empty-state .empty-icon { border: none; box-shadow: var(--clay-inner); }
 
 @media (max-width: 1024px) {
   .courses-grid {

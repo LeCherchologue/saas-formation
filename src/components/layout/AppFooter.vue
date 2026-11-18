@@ -10,11 +10,11 @@
           </svg>
         </div>
         <div class="guarantee-text">
-          <h4>Certificats officiels vérifiables & sécurisés</h4>
-          <p>Chaque diplôme Debugger comporte un identifiant cryptographique unique et un QR Code vérifié en temps réel par les recruteurs et les institutions.</p>
+          <h4>Formations gratuites, certificats officiels</h4>
+          <p>Suivez gratuitement toutes nos formations. À la fin du parcours, obtenez votre certificat pour 5 100 FCFA par Airtel Money, Moov Money ou Visa.</p>
         </div>
-        <router-link to="/verify" class="btn btn-outline-green btn-sm">
-          Tester le vérificateur
+        <router-link to="/connexion?mode=register" class="btn btn-outline-green btn-sm">
+          Créer mon compte
         </router-link>
       </div>
 
@@ -24,9 +24,9 @@
         <div class="footer-col brand-col">
           <div class="footer-logo">
             <svg viewBox="0 0 56 40" width="44" height="32" fill="none">
-              <path d="M14 8L4 20L14 32" stroke="#f5f6f5" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M42 8L52 20L42 32" stroke="#f5f6f5" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
-              <path d="M32 6L24 34" stroke="#34d399" stroke-width="4" stroke-linecap="round"/>
+              <path d="M14 8L4 20L14 32" stroke="#f0fdfa" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M42 8L52 20L42 32" stroke="#f0fdfa" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M32 6L24 34" stroke="#14b8a6" stroke-width="4" stroke-linecap="round"/>
             </svg>
             <div>
               <span class="footer-brand-name">Debugger</span>
@@ -85,8 +85,8 @@
             <li><router-link to="/courses">Catalogue complet</router-link></li>
             <li><router-link to="/plans">Tarifs &amp; Formules</router-link></li>
             <li><router-link to="/businesses">Debugger Entreprises</router-link></li>
-            <li><router-link to="/dashboard">Mon espace apprenant</router-link></li>
-            <li><router-link to="/verify">Vérifier un certificat</router-link></li>
+            <li><router-link to="/espace">Mon espace apprenant</router-link></li>
+            <li><router-link to="/connexion">Se connecter</router-link></li>
           </ul>
         </div>
 
@@ -133,25 +133,25 @@ export default defineComponent({ name: 'AppFooter' })
 /* Dark footer anchor on an otherwise light page — token overrides scoped to this subtree
    so every existing var(--color-*) rule below reads correctly on the dark background. */
 .main-footer {
-  --color-text: #f5f6f5;
+  --color-text: #f0fdfa;
   --color-text-secondary: #c3c9c6;
   --color-text-muted: #9aa39f;
   --color-text-light: #6b7370;
   --color-surface-2: #1c2023;
   --color-border: rgba(255, 255, 255, 0.10);
   --color-border-subtle: rgba(255, 255, 255, 0.06);
-  --color-border-medium: rgba(52, 211, 153, 0.32);
-  --color-primary-light: rgba(52, 211, 153, 0.14);
+  --color-border-medium: rgba(20, 184, 166, 0.32);
+  --color-primary-light: rgba(20, 184, 166, 0.14);
 
-  background-color: #14171a;
+  background-color: #134e4a;
   color: var(--color-text-secondary);
   padding: 4rem 0 2rem 0;
   border-top: 1px solid var(--color-border);
 }
 
 .footer-guarantee {
-  background: linear-gradient(135deg, rgba(52, 211, 153, 0.10) 0%, rgba(14, 143, 166, 0.06) 100%);
-  border: 1px solid var(--color-border-medium);
+  background: linear-gradient(135deg, rgba(20, 184, 166, 0.10) 0%, rgba(14, 143, 166, 0.06) 100%);
+  border: var(--border-w) solid var(--color-border-medium);
   border-radius: var(--radius-lg);
   padding: 1.75rem 2rem;
   display: flex;
@@ -169,7 +169,7 @@ export default defineComponent({ name: 'AppFooter' })
     justify-content: center;
     flex-shrink: 0;
     color: var(--color-primary);
-    border: 1px solid var(--color-border-medium);
+    border: var(--border-w) solid var(--color-border-medium);
   }
 
   .guarantee-text {
@@ -227,7 +227,7 @@ export default defineComponent({ name: 'AppFooter' })
   width: 36px;
   height: 36px;
   background-color: var(--color-surface-2);
-  border: 1px solid var(--color-border);
+  border: var(--border-w) solid var(--color-border);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -286,12 +286,40 @@ export default defineComponent({ name: 'AppFooter' })
   align-items: center;
   gap: 0.3rem;
   background-color: var(--color-surface-2);
-  border: 1px solid var(--color-border);
+  border: var(--border-w) solid var(--color-border);
   padding: 0.25rem 0.65rem;
   border-radius: var(--radius-sm);
   font-size: 0.72rem;
   color: var(--color-text-muted);
   svg { stroke: var(--color-primary); }
+}
+
+/* =====================================================================
+   THÈME CLAY — pied de page sarcelle foncé arrondi
+   ===================================================================== */
+.main-footer {
+  --color-primary: #5eead4;
+  --color-primary-ink: #5eead4;
+  --color-surface-2: #1a5c57;
+  --color-text-secondary: #cde7e3;
+  --color-text-muted: #a9cbc6;
+  margin: 2rem 0.75rem 0.75rem;
+  border-radius: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.6);
+  border-top: 4px solid rgba(255, 255, 255, 0.6);
+  box-shadow: var(--shadow-xl), inset 0 4px 0 rgba(255, 255, 255, 0.08);
+}
+.footer-guarantee {
+  background: rgba(255, 255, 255, 0.06);
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-lg);
+  box-shadow: inset 0 3px 0 rgba(255, 255, 255, 0.06);
+}
+.footer-brand-name { font-family: var(--font-heading); font-weight: 900; }
+.social-btn, .chip {
+  border-radius: 14px;
+  border: 2px solid rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.06);
 }
 
 @media (max-width: 900px) {
